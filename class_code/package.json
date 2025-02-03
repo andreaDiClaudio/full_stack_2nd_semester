@@ -9,7 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~52.0.28",
+    "expo": "^52.0.28",
+    "expo-cli": "^6.3.12",
+    "expo-dev-client": "^5.0.11",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
     "react-native": "0.76.6"
@@ -17,6 +19,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
+    "@types/react-native": "^0.72.8",
     "typescript": "^5.3.3"
   },
   "private": true
