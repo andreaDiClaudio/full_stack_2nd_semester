@@ -1,5 +1,5 @@
 export class TodoEntity {
-    public completed: boolean = false;
+    public isCompleted: boolean = false;
 
     constructor(public id: number, public title: string) { }
 }

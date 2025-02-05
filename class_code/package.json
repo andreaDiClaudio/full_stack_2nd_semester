@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gluestack-ui/button": "^1.0.8",
+    "@gluestack-ui/checkbox": "^0.1.33",
     "@gluestack-ui/config": "^1.1.20",
     "@gluestack-ui/form-control": "^0.1.19",
     "@gluestack-ui/icon": "^0.1.25",
