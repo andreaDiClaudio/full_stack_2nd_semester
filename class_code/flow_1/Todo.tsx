@@ -1,49 +1,72 @@
-import { View, Text, TextInput, StyleSheet, Button } from 'react-native'
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { Button, ButtonText } from "@/components/ui/button"
 import React from 'react'
 import { TodoEntity } from './TodoEntity';
+import { Input, InputField } from '@/components/ui/input';
+
 
 export default function Todo() {
-    const [todos, setTodos] = React.useState([] as TodoEntity[]);
-    const [todo, setTodo] = React.useState('');
-    const onAddTodo = () => {
-        const newTodo = new TodoEntity(todos.length, todo);
-        setTodos([...todos, newTodo]);
-        console.log(todos);
-    }
-    return (
-    <View style={styles.container}>
-      <Text>Todo List</Text>
-      <TextInput
-          style={styles.input}
-          onChangeText={setTodo}
-          value={todo}
-          placeholder="useless placeholder"
-        />
+  const { width: screenWidth } = Dimensions.get("window");
 
-        <Button
-            onPress={onAddTodo}
-            title="Add todo"
-            color="#841584"
-            accessibilityLabel="Add todo"
-        />
+  const [todos, setTodos] = React.useState([] as TodoEntity[]);
+  const [todo, setTodo] = React.useState('');
+
+  const onAddTodo = () => {
+    setTodos((prevTodos) => {
+      const currentTodo = new TodoEntity(prevTodos.length, todo);
+      const updatedTodos = [...prevTodos, currentTodo];
+      console.log("LIST:", updatedTodos); 
+      return updatedTodos;
+    });
+
+    setTodo("");
+  };
+
+  return (
+    <View style={[styles.container, { width: screenWidth * 0.5 }]}>
+
+      <Text style={{ fontSize: 40, fontWeight: 600 }}>Todo List</Text>
+      <Input
+        variant="outline"
+        size="xl"
+        isDisabled={false}
+        isInvalid={false}
+        isReadOnly={false}
+      >
+        <InputField
+          value={todo}
+          onChangeText={setTodo}
+          placeholder="e.g. Call mom" />
+      </Input>
+
+      <Button
+        size="xl"
+        variant="solid"
+        action="primary"
+        onPress={onAddTodo}
+        accessibilityLabel="Add todo button">
+        <ButtonText>Create</ButtonText>
+      </Button>
+
     </View>
   )
 }
 
 
 const styles = StyleSheet.create({
-    input: {
-      height: 40,
-      width: 200,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
+  input: {
+    height: 40,
+    width: 200,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
 
-    container: {
-      display: "flex",
-      justifyContent:"center",
-      alignItems:"center"
-    },
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    rowGap: 20,
+  },
 
-  });
+});
