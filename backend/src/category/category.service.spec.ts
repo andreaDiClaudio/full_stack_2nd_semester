@@ -23,6 +23,7 @@ describe('CategoryService', () => {
     repository = module.get<Repository<Category>>(getRepositoryToken(Category));
   });
 
+  // Wrap function into a describe to group them easier (for exampme by funciton)
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
