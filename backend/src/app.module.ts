@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MovieModule } from './movie/movie.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
  imports: [
@@ -23,7 +23,7 @@ import { MovieModule } from './movie/movie.module';
      }),
      inject: [ConfigService],
    }),
-   MovieModule,
+   CategoryModule,
  ],
  controllers: [AppController],
  providers: [AppService],
