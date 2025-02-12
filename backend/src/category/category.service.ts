@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entity/category.entity';
 import { Repository } from 'typeorm';
-import { CreateCateogoryDto } from './dto/create-category.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -21,7 +21,7 @@ export class CategoryService {
         return `This action returns a #${id} category`;
     };
 
-    create(createCategoryDto: CreateCateogoryDto) {
+    create(createCategoryDto: CreateCategoryDto) {
         return this.categoryRepository.save(createCategoryDto);
     }
 

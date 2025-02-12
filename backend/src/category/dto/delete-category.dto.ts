@@ -1,1 +1,3 @@
-export class DeleteCategoryDto {}
+export class CreateCategoryDto {
+    id: number;
+}

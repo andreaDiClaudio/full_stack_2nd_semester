@@ -1,1 +1,4 @@
-export class CreateCateogoryDto {}
+export class CreateCategoryDto {
+    id: number;
+    title: string;
+}
