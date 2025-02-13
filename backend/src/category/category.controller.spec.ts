@@ -134,6 +134,21 @@ describe('CategoryController', () => {
     });
   });
 
+  describe('Delete', () => {
+    it('should delete the category if found', async () => {
+      await categoryRepository.save(mockCategories);
+      const id = 1;
+
+      const response = await request(app.getHttpServer())
+        .delete(`/category/${id}`)
+        .send({ id })
+        .expect(HttpStatus.OK);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toContain(`Category with ID ${id} deleted successfully`);
+    });
+
+  });
   afterAll(async () => {
     await categoryRepository.manager.connection.destroy();
     await app.close();
