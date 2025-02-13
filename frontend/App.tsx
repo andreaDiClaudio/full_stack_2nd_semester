@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { StyleSheet, Text, View } from 'react-native';
-import Todo from './flow_1/Todo';
+import Todo from './flow_1/Category';
 import { config } from '@gluestack-ui/config';
 
 export default function App() {
