@@ -1,5 +1,6 @@
-import { Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -15,7 +16,7 @@ export class CategoryController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    create() {
-        //TODO:
+    create(@Body() createCategoryDto: CreateCategoryDto) {
+        return this.categoryService.create(createCategoryDto);
     }
 }

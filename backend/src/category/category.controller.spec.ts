@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';  // Importing supertest
 import { CategoryController } from './category.controller';
 import { CategoryService } from './category.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
@@ -14,11 +15,10 @@ const mockCategories = [
 ];
 
 describe('CategoryController', () => {
-  let controller: CategoryController;
-  let service: CategoryService;
+  let app;
   let categoryRepository: Repository<Category>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -33,8 +33,9 @@ describe('CategoryController', () => {
       providers: [CategoryService],
     }).compile();
 
-    controller = module.get<CategoryController>(CategoryController);
-    service = module.get<CategoryService>(CategoryService);
+    app = module.createNestApplication();
+    await app.init();
+
     categoryRepository = module.get<Repository<Category>>(getRepositoryToken(Category));
   });
 
@@ -43,47 +44,53 @@ describe('CategoryController', () => {
     await categoryRepository.clear();
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+  it('should return a list of categories', async () => {
+    await categoryRepository.save(mockCategories);
 
-  describe("Get", () => {
-    it('hould return all categories with success message and status 200', async () => {
-      await categoryRepository.save(mockCategories);
+    const response = await request(app.getHttpServer())
+      .get('/category')
+      .expect(HttpStatus.OK);
 
-      const result = await controller.findAll();
-      expect(result.success).toBe(true);
-      expect(result.message).toBe('Categories retrieved successfully');
-      expect(result.data).toEqual(mockCategories);
-    });
+    // Check individual response fields
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe('Categories retrieved successfully');
+    expect(response.body.data).toEqual(mockCategories);
   });
 
   it('should return "No categories found" when there are no categories', async () => {
-    const result = await controller.findAll();
-    expect(result.success).toBe(true);
-    expect(result.message).toBe('No categories found');
-    expect(result.data).toEqual([]);
+    const response = await request(app.getHttpServer())
+      .get('/category')
+      .expect(HttpStatus.OK);
+
+    // Check individual response fields
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe('No categories found');
+    expect(response.body.data).toEqual([]);
   });
 
-  it('should throw an error if there is a database failure', async () => {
+  it('should return an error if there is a database failure', async () => {
+    // Simulate a database failure (mock the repository)
     jest.spyOn(categoryRepository, 'find').mockRejectedValueOnce(new Error('Database failure'));
-
     try {
-      await controller.findAll();
+      await request(app.getHttpServer())
+        .get('/category') 
+        .expect(HttpStatus.INTERNAL_SERVER_ERROR);
     } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      const response = error.response;  // Get the response body from the error
 
-      const response = error.getResponse();
+      // Check individual response fields
       expect(response.success).toBe(false);
       expect(response.message).toBe('Error in retrieving categories, database failure');
-      expect(response.error).toBeInstanceOf(Error); // Ensure it's an Error object
-      expect(response.error.message).toBe('Database failure');
+      expect(response.error).toBeInstanceOf(Error); 
+      expect(response.error.message).toBe('Database failure');  
     }
   });
 
   afterAll(async () => {
-    // Close the database connection after all tests are completed
     await categoryRepository.manager.connection.destroy();
+    await app.close();
   });
 });
+
+
+
