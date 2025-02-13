@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entity/category.entity';
 import { Repository } from 'typeorm';
@@ -13,9 +13,27 @@ export class CategoryService {
     //  while if creating manually a new instance of the repo, it is not possible to mock because we harcoded a connection between serive and repo.
     constructor(@InjectRepository(Category) private categoryRepository: Repository<Category>, ) { }
 
-    findAll() {
-        return this.categoryRepository.find({});
-    };
+    async findAll() {
+        try {
+            const categories = await this.categoryRepository.find();
+
+            return {
+                success:true,
+                statusCode:HttpStatus.OK,
+                message:categories.length ? 'Categories retrieved successfully' : 'No categories found',
+                data: categories
+            }
+        } catch (error) {
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error in retrieving categories, database failure',
+                    error: error.message
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+    };  
     
     findById(id: number) {
         return `This action returns a #${id} category`;

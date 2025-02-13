@@ -3,6 +3,7 @@ import { CategoryService } from './category.service';
 import { Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 describe('CategoryService', () => {
   let service: CategoryService;
@@ -28,7 +29,7 @@ describe('CategoryService', () => {
         CategoryService,
         {
           provide: getRepositoryToken(Category),
-          useClass: Repository, 
+          useValue: repository,
         }
       ],
     }).compile();
@@ -42,11 +43,40 @@ describe('CategoryService', () => {
   });
 
   describe("Get", () => {
+    it("Should return all categories with success message and status 200", async () => {
+      const result = await service.findAll();
 
-    it("Should return all elements in the db", () => {
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Categories retrieved successfully');
+      expect(result.statusCode).toBe(200);
 
+      expect(repository.find).toHaveBeenCalledTimes(1);
     });
 
+    it("Should return an empty array with success message and status 200", async () => {
+      repository.find!.mockResolvedValue([]);
+
+      const result = await service.findAll();
+
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('No categories found');
+      expect(result.statusCode).toBe(200);
+    });
+
+    it('Should throw an error with appropriate message and status 500 on DB failure', async () => {
+      repository.find!.mockRejectedValue(new Error('Database connection failed'));
+
+      await expect(service.findAll()).rejects.toThrowError(
+        new HttpException(
+          {
+            success: false,
+            message: 'Error in retrieving categories, database failure',
+            error: 'Database connection failed'
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        ),
+      );
+    });
   });
-  
+
 });

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { CategoryService } from './category.service';
 
 @Controller('category')
@@ -9,6 +9,7 @@ export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
     @Get()
+    @HttpCode(HttpStatus.OK)
     findAll() {
         return this.categoryService.findAll();
     }
