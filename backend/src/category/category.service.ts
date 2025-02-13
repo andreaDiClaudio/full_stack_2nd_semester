@@ -4,6 +4,7 @@ import { Category } from './entity/category.entity';
 import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ResponseDto } from 'src/interfaces/response.interface';
+import { CategoryNotFoundException } from 'src/utils/exception.utils';
 
 @Injectable()
 export class CategoryService {
@@ -36,9 +37,43 @@ export class CategoryService {
         }
     };
 
-    findById(id: number) {
-        return `This action returns a #${id} category`;
-    };
+    // Find category by ID
+    async findById(id: number): Promise<ResponseDto> {
+        // Start with the try-catch block to handle any unexpected errors
+        try {
+            // Fetch the category by ID
+            const category = await this.categoryRepository.findOne({ where: { id } });
+
+            if (!category) {
+                throw new CategoryNotFoundException(id);  // Throw custom exception
+            }
+
+            // Return a success response with the category data
+            return {
+                success: true,
+                message: `Category with ID ${id} found`,
+                statusCode: HttpStatus.OK,
+                data: category
+            };
+
+        } catch (error) {
+            // Catch custom exceptions or unexpected errors
+            if (error instanceof CategoryNotFoundException) {
+                // Handle the custom exception
+                throw error;
+            }
+
+            // Handle unexpected errors
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error retrieving category',
+                    error: error || 'Unknown error'
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+    }
 
     async create(createCategoryDto: CreateCategoryDto): Promise<ResponseDto> {
         try {
@@ -62,11 +97,6 @@ export class CategoryService {
         }
     }
 
-    update(id: number) { //Import also the updateDto
-        return `This action updates a #${id} category`;
-    }
-
-    delete(id: number) { //Import also the deleteDto
-        return `This action removes a #${id} category`;
+    async delete(id: number) {
     }
 }

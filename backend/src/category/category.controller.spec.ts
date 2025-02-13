@@ -10,12 +10,11 @@ import { Category } from './entity/category.entity';
 
 // Mock data for the tests
 const mockCategories = [
-  { id: 1, title: 'Category 1' },
-  { id: 2, title: 'Category 2' },
+  { title: 'Category 1' },
+  { title: 'Category 2' },
 ];
 
 const newCategory = {
-  id: 100,
   title: 'New Category',
 };
 
@@ -65,6 +64,7 @@ describe('CategoryController', () => {
 
     it('should return "No categories found" when there are no categories', async () => {
       const response = await request(app.getHttpServer())
+
         .get('/category')
         .expect(HttpStatus.OK);
 
@@ -73,6 +73,32 @@ describe('CategoryController', () => {
       expect(response.body.message).toBe('No categories found');
       expect(response.body.data).toEqual([]);
     });
+
+    it('should return a single category', async () => {
+      await categoryRepository.save(mockCategories);
+      const id = 1;
+
+      // Assuming you have already saved a category with ID 1 in the database
+      const response = await request(app.getHttpServer())
+        .get(`/category/${id}`)
+        .expect(HttpStatus.OK);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe(`Category with ID ${id} found`);
+    });
+
+    it('should return 404 if category is not found', async () => {
+      const id = 999; // Assuming this ID does not exist
+
+      const response = await request(app.getHttpServer())
+        .get(`/category/${id}`)
+        .expect(HttpStatus.NOT_FOUND);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe(`Category with ID ${id} not found`);
+      expect(response.body.error).toBe('Not Found');
+    });
+
   });
 
   describe('Post', () => {
@@ -86,50 +112,25 @@ describe('CategoryController', () => {
       // Check individual response fields
       expect(response.body.success).toBe(true);
       expect(response.body.message).toBe('Category created successfully');
-      expect(response.body.data).toEqual(newCategory);
+      expect(response.body.data).toEqual({
+        title: "New Category",
+        id: 3
+      });
     });
 
-    it('should return 400 if the category data is invalid (missing id and title for one, missing title for one, missing id for one)', async () => {
+    it('should return 400 if the category data is invalid', async () => {
       // First request: Missing both id and title
-      const invalidCategoryDto1 = {};
+      const invalidCategoryDto = {};
 
       const response1 = await request(app.getHttpServer())
         .post('/category')
-        .send(invalidCategoryDto1)
+        .send(invalidCategoryDto)
         .expect(HttpStatus.BAD_REQUEST);
 
       expect(response1.body).toBeDefined();
       expect(response1.body.error).toBe('Bad Request');
-      expect(response1.body.message).toContain('id must be a number conforming to the specified constraints');
-      expect(response1.body.message).toContain('id should not be empty');
       expect(response1.body.message).toContain('title must be a string');
       expect(response1.body.message).toContain('title should not be empty');
-
-      // Second request: Missing title
-      const invalidCategoryDto2 = { id: 1 };
-
-      const response2 = await request(app.getHttpServer())
-        .post('/category')
-        .send(invalidCategoryDto2)
-        .expect(HttpStatus.BAD_REQUEST);
-
-      expect(response2.body).toBeDefined();
-      expect(response2.body.error).toBe('Bad Request');
-      expect(response2.body.message).toContain('title must be a string');
-      expect(response2.body.message).toContain('title should not be empty');
-
-      // Third request: Missing id
-      const invalidCategoryDto3 = { title: 'Category 1' };
-
-      const response3 = await request(app.getHttpServer())
-        .post('/category')
-        .send(invalidCategoryDto3)
-        .expect(HttpStatus.BAD_REQUEST);
-
-      expect(response3.body).toBeDefined();
-      expect(response3.body.error).toBe('Bad Request');
-      expect(response3.body.message).toContain('id must be a number conforming to the specified constraints');
-      expect(response3.body.message).toContain('id should not be empty');
     });
   });
 
