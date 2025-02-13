@@ -7,6 +7,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ResponseDto } from 'src/interfaces/response.interface';
 
+//TODO: move this to controller test file
 describe('CategoryService', () => {
   let service: CategoryService;
   let repository: jest.Mocked<Partial<Repository<Category>>>;
