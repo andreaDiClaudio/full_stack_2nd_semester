@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { ResponseDto } from 'src/interfaces/response.interface';
 
 describe('CategoryService', () => {
   let service: CategoryService;
@@ -78,5 +80,11 @@ describe('CategoryService', () => {
       );
     });
   });
+
+  describe("Post", () => {
+    it("Should create a category succesfully with valid data", async () => {
+      //TODO find a way to mock this properly. See how you did it in the previous project
+    })
+  })
 
 });
