@@ -45,7 +45,7 @@ export class CategoryService {
             const category = await this.categoryRepository.findOne({ where: { id } });
 
             if (!category) {
-                throw new CategoryNotFoundException(id);  // Throw custom exception
+                throw new CategoryNotFoundException(id);
             }
 
             // Return a success response with the category data
@@ -97,6 +97,33 @@ export class CategoryService {
         }
     }
 
-    async delete(id: number) {
+    async delete(id: number): Promise<ResponseDto> {
+        try {
+            // Check if the category exists
+            await this.findById(id);
+
+            // Proceed with deletion
+            await this.categoryRepository.delete(id);
+
+            return {
+                success: true,
+                message: `Category with ID ${id} deleted successfully`,
+                statusCode: HttpStatus.OK
+            };
+        } catch (error) {
+            if (error instanceof CategoryNotFoundException) {
+                throw error; // Re-throw if it's a known error
+            }
+
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error deleting category',
+                    error: error || 'Unknown error'
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
+
 }
