@@ -19,8 +19,7 @@ export default function Category() {
     try {
       const response = await fetch('http://localhost:3000/category');
       const data = await response.json();
-      console.log(data);
-      
+  
       setCategories(data.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -36,13 +35,13 @@ export default function Category() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title: categoryName }), // Adjust the payload to match your API requirements
+        body: JSON.stringify({ title: categoryName }),
       });
       if (response.ok) {
         setCategoryName('');
         fetchCategories(); // Refresh the category list after creation
       } else {
-        console.error('Error creating category');
+        console.error('Error creating category', response);
       }
     } catch (error) {
       console.error('Error creating category:', error);
@@ -56,7 +55,7 @@ export default function Category() {
 
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
-      <Text style={{ fontSize: 40, fontWeight: "600" }}>Category List</Text>
+      <Text style={{ fontSize: 40, fontWeight: "600", textAlign:'center' }}>Category List</Text>
 
       <Input variant="outline" size="xl" isDisabled={false} isInvalid={false} isReadOnly={false}>
         <InputField value={categoryName} onChangeText={setCategoryName} placeholder="e.g. Work" />
