@@ -134,6 +134,78 @@ describe('CategoryController', () => {
     });
   });
 
+  describe('Put', () => {
+    it('should update the category if found', async () => {
+      // Save initial mock categories
+      await categoryRepository.save(mockCategories);
+      const id = 1;
+  
+      const updatedCategory = {
+        title: 'Updated Category',
+      };
+  
+      const response = await request(app.getHttpServer())
+        .put(`/category/${id}`)
+        .send(updatedCategory)
+        .expect(HttpStatus.OK);
+  
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe(`Category with ID ${id} updated successfully`);
+      expect(response.body.data.title).toBe(updatedCategory.title);
+    });
+  
+    it('should return 404 if category to update is not found', async () => {
+      const id = 999; // Assuming this ID does not exist
+  
+      const updatedCategory = {
+        title: 'Updated Category',
+      };
+  
+      const response = await request(app.getHttpServer())
+        .put(`/category/${id}`)
+        .send(updatedCategory)
+        .expect(HttpStatus.NOT_FOUND);
+  
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe(`Category with ID ${id} not found`);
+      expect(response.body.error).toBe('Not Found');
+    });
+  
+    it('should return 400 if the update data is invalid', async () => {
+      await categoryRepository.save(mockCategories);
+      const id = 1;
+  
+      // Invalid data (missing title)
+      const invalidUpdate = {};
+  
+      const response = await request(app.getHttpServer())
+        .put(`/category/${id}`)
+        .send(invalidUpdate)
+        .expect(HttpStatus.BAD_REQUEST);
+  
+      expect(response.body.error).toBe('Bad Request');
+      expect(response.body.message).toContain('title should not be empty');
+    });
+  
+    it('should return 400 if category title is empty', async () => {
+      await categoryRepository.save(mockCategories);
+      const id = 1;
+  
+      // Invalid data (empty title)
+      const invalidUpdate = {
+        title: '',
+      };
+  
+      const response = await request(app.getHttpServer())
+        .put(`/category/${id}`)
+        .send(invalidUpdate)
+        .expect(HttpStatus.BAD_REQUEST);
+  
+      expect(response.body.error).toBe('Bad Request');
+      expect(response.body.message).toContain('title should not be empty');
+    });
+  });
+
   describe('Delete', () => {
     it('should delete the category if found', async () => {
       await categoryRepository.save(mockCategories);

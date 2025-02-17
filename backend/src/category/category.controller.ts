@@ -33,7 +33,7 @@ export class CategoryController {
     @HttpCode(HttpStatus.OK)
     async update(
         @Param('id') id: number,
-        @Body() updateCategoryDto: UpdateCategoryDto,  // Use UpdateCategoryDto here
+        @Body() updateCategoryDto: UpdateCategoryDto, 
     ) {
         return this.categoryService.update(id, updateCategoryDto);  // Call service method to update
     }
