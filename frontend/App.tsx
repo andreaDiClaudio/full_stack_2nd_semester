@@ -3,10 +3,10 @@ import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { StyleSheet, Text, View } from 'react-native';
 import Todo from './flow_1/Category';
-import { config } from '@gluestack-ui/config';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import EditScreen from './flow_2/Edit';
+import { createStackNavigator } from '@react-navigation/stack';
+import { RootStackParamList } from './flow_1/utils/types';
+import EditScreen from './flow_2/EditCategory';
 
 function HomeScreen() {
   return (
@@ -21,25 +21,32 @@ function HomeScreen() {
   );
 }
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 function RootStack() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        headerStyle: { backgroundColor: 'green' },
+        headerStyle: { backgroundColor: 'tomato' },
       }}
     >
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: 'Welcome' }}
+        options={{
+          title: 'Category List',
+          headerTintColor: "white"
+        }
+        }
       />
       <Stack.Screen
         name="Edit"
         component={EditScreen}
-        options={{ title: 'Edit' }}
+        options={{
+          title: 'Edit',
+          headerTintColor: "white"
+        }}
       />
     </Stack.Navigator>
   );

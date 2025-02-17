@@ -3,9 +3,14 @@ import { Button, ButtonText } from "@/components/ui/button";
 import React, { useEffect } from 'react';
 import { Input, InputField } from '@/components/ui/input';
 import { CategoryEntity } from './CategoryEntity';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './utils/types';
 
 export default function Category() {
   const { width: screenWidth } = Dimensions.get("window");
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
 
   const [categories, setCategories] = React.useState([] as CategoryEntity[]);
   const [categoryName, setCategoryName] = React.useState('');
@@ -51,6 +56,7 @@ export default function Category() {
   // Function to handle item press (you can adjust this for any further functionality)
   const handlePressCategory = (category: CategoryEntity) => {
     console.log('Category pressed:', category);
+    navigation.navigate('Edit', { categoryId: category.id, categoryTitle: category.title });
   };
 
   return (
