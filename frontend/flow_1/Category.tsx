@@ -3,7 +3,7 @@ import { Button, ButtonText } from "@/components/ui/button";
 import React, { useEffect } from 'react';
 import { Input, InputField } from '@/components/ui/input';
 import { CategoryEntity } from './CategoryEntity';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './utils/types';
 
@@ -20,11 +20,17 @@ export default function Category() {
     fetchCategories();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCategories();
+    }, [])
+  );
+
   const fetchCategories = async () => {
     try {
       const response = await fetch('http://localhost:3000/category');
       const data = await response.json();
-  
+
       setCategories(data.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -61,7 +67,7 @@ export default function Category() {
 
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
-      <Text style={{ fontSize: 40, fontWeight: "600", textAlign:'center' }}>Category List</Text>
+      <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Category List</Text>
 
       <Input variant="outline" size="xl" isDisabled={false} isInvalid={false} isReadOnly={false}>
         <InputField value={categoryName} onChangeText={setCategoryName} placeholder="e.g. Work" />

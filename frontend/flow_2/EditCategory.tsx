@@ -4,11 +4,13 @@ import React, { useEffect } from 'react';
 import { Input, InputField } from '@/components/ui/input';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/flow_1/utils/types';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export default function EditScreen() {
   const { width: screenWidth } = Dimensions.get("window");
 
   type EditScreenRouteProp = RouteProp<RootStackParamList, 'Edit'>;
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Edit'>>();
 
   const route = useRoute<EditScreenRouteProp>();
   const { categoryId, categoryTitle } = route.params;
@@ -19,23 +21,23 @@ export default function EditScreen() {
   const editCategory = async () => {
     if (!categoryName.trim()) return;
 
-    //TODO backend endpoit
-    // try {
-    //   const response = await fetch(`http://localhost:3000/category/${categoryId}`, {
-    //     method: 'PUT',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ title: categoryName }),
-    //   });
-    //   if (response.ok) {
-    //     console.log('Category updated successfully');
-    //   } else {
-    //     console.error('Error updating category', response);
-    //   }
-    // } catch (error) {
-    //   console.error('Error updating category:', error);
-    // }
+    try {
+      const response = await fetch(`http://localhost:3000/category/${categoryId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: categoryName }),
+      });
+      if (response.ok) {
+        console.log('Category updated successfully');
+        navigation.goBack();
+      } else {
+        console.error('Error updating category', response);
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+    }
   };
 
   return (

@@ -2,18 +2,18 @@ import { StatusBar } from 'expo-status-bar';
 import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { StyleSheet, Text, View } from 'react-native';
-import Todo from './flow_1/Category';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from './flow_1/utils/types';
 import EditScreen from './flow_2/EditCategory';
+import Category from './flow_1/Category';
 
 function HomeScreen() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <GluestackUIProvider mode="light">
         <View style={styles.container}>
-          <Todo />
+          <Category />
           <StatusBar style="auto" />
         </View>
       </GluestackUIProvider>
