@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { ResponseDto } from 'src/interfaces/response.interface';
 import { CategoryNotFoundException } from 'src/utils/exception.utils';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -94,6 +95,44 @@ export class CategoryService {
                 },
                 HttpStatus.INTERNAL_SERVER_ERROR
             )
+        }
+    }
+
+    // Edit (Update) Category function
+    async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<ResponseDto> {
+        try {
+            // Check if the category exists
+            const category = await this.categoryRepository.findOne({ where: { id } });
+            if (!category) {
+                throw new CategoryNotFoundException(id);  // Throw custom error if not found
+            }
+
+            // Update the category with the provided data
+            const updatedCategory = await this.categoryRepository.save({
+                ...category,  // Preserve existing category data
+                ...updateCategoryDto  // Apply updates from the DTO
+            });
+
+            return {
+                success: true,
+                statusCode: HttpStatus.OK,
+                message: `Category with ID ${id} updated successfully`,
+                data: updatedCategory
+            };
+
+        } catch (error) {
+            if (error instanceof CategoryNotFoundException) {
+                throw error;
+            }
+
+            throw new HttpException(
+                {
+                    success: false,
+                    message: 'Error updating category',
+                    error: error || 'Unknown error'
+                },
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 

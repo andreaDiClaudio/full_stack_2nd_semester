@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Req, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Req, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -25,6 +26,16 @@ export class CategoryController {
     @HttpCode(HttpStatus.CREATED)
     create(@Body() createCategoryDto: CreateCategoryDto) {
         return this.categoryService.create(createCategoryDto);
+    }
+
+    @Put(':id')
+    @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    @HttpCode(HttpStatus.OK)
+    async update(
+        @Param('id') id: number,
+        @Body() updateCategoryDto: UpdateCategoryDto,  // Use UpdateCategoryDto here
+    ) {
+        return this.categoryService.update(id, updateCategoryDto);  // Call service method to update
     }
 
     @Delete(':id')
