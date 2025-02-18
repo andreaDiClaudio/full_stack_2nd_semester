@@ -37,28 +37,6 @@ export default function Category() {
     }
   };
 
-  const onAddCategory = async () => {
-    if (!categoryName.trim()) return;
-
-    try {
-      const response = await fetch('http://localhost:3000/category', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: categoryName }),
-      });
-      if (response.ok) {
-        setCategoryName('');
-        fetchCategories(); // Refresh the category list after creation
-      } else {
-        console.error('Error creating category', response);
-      }
-    } catch (error) {
-      console.error('Error creating category:', error);
-    }
-  };
-
   // Function to handle item press (you can adjust this for any further functionality)
   const handlePressCategory = (category: CategoryEntity) => {
     console.log('Category pressed:', category);
@@ -68,14 +46,6 @@ export default function Category() {
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
       <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Category List</Text>
-
-      <Input variant="outline" size="xl" isDisabled={false} isInvalid={false} isReadOnly={false}>
-        <InputField value={categoryName} onChangeText={setCategoryName} placeholder="e.g. Work" />
-      </Input>
-
-      <Button size="xl" variant="solid" action="primary" onPress={onAddCategory} accessibilityLabel="Create category button">
-        <ButtonText>Create</ButtonText>
-      </Button>
 
       <View style={[styles.container, { paddingTop: 30 }, { width: "140%" }]}>
         <View style={styles.listContainer}>
@@ -102,15 +72,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     rowGap: 20,
+    paddingTop:100
   },
 
   listContainer: {
-    height: 300,
+    height: 500,
     width: "100%",
     marginTop: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
     padding: 10,
   },
 
