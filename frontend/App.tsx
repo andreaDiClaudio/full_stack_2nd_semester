@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from './flow_1/utils/types';
 import EditScreen from './flow_2/EditCategory';
 import Category from './flow_1/Category';
+import DeleteScreen from './flow_2/DeleyeCategory';
 
 function HomeScreen() {
   return (
@@ -45,6 +46,14 @@ function RootStack() {
         component={EditScreen}
         options={{
           title: 'Edit',
+          headerTintColor: "white"
+        }}
+      />
+      <Stack.Screen
+        name="Delete"
+        component={DeleteScreen}
+        options={{
+          title: 'Delete',
           headerTintColor: "white"
         }}
       />

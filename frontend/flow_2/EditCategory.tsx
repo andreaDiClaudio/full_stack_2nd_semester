@@ -40,6 +40,10 @@ export default function EditScreen() {
     }
   };
 
+  const onDeletePress = () => {
+    navigation.navigate('Delete', { categoryId: categoryId, categoryTitle: categoryTitle });
+  };
+
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
       <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Edit Category</Text>
@@ -54,6 +58,9 @@ export default function EditScreen() {
 
       <Button size="xl" variant="solid" action="primary" onPress={editCategory} accessibilityLabel="Edit category name button">
         <ButtonText>Edit</ButtonText>
+      </Button>
+      <Button size="xl" variant="solid" action="primary" onPress={onDeletePress} accessibilityLabel="Delete category">
+        <ButtonText>Delete</ButtonText>
       </Button>
     </View>
   );
