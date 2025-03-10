@@ -7,6 +7,7 @@ import { HttpStatus } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
+import { Entry } from 'src/entry/entities/entry.entity';
 
 // Mock data for the tests
 const mockCategories = [
@@ -28,10 +29,10 @@ describe('CategoryController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: ':memory:', // Use SQLite in-memory database
-          entities: [Category],
+          entities: [Category, Entry],
           synchronize: true, // Automatically synchronize database schema
         }),
-        TypeOrmModule.forFeature([Category]),
+        TypeOrmModule.forFeature([Category, Entry]),
       ],
       controllers: [CategoryController],
       providers: [CategoryService],
@@ -113,6 +114,7 @@ describe('CategoryController', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.message).toBe('Category created successfully');
       expect(response.body.data).toEqual({
+        description: "",
         title: "New Category",
         id: 3
       });
