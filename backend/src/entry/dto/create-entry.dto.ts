@@ -1,9 +1,13 @@
-import { Category } from "src/category/entity/category.entity"
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateEntryDto {
-    title: string
+    @IsString()
+    @IsNotEmpty()
+    title: string;
 
-    amount: number
+    @IsNumber()
+    amount: number;
 
-    category: Category
+    @IsNotEmpty()
+    categoryId: number;
 }
