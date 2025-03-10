@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { EntryService } from './entry.service';
 import { CreateEntryDto } from './dto/create-entity.dto';
 import { UpdateEntryDto } from './dto/update-entry.dto';
+import { EntryService } from './entry.service';
 
 @Controller('entry')
 export class EntryController {

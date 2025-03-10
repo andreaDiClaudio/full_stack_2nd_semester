@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { CreateEntryDto } from './dto/create-entity.dto';
 import { UpdateEntryDto } from './dto/update-entry.dto';
 
-//TODO see if logic improvement is needed and finish doing exercise about migration in slide
 @Injectable()
 export class EntryService {
     constructor(@InjectRepository(Entry) private entriesRepository: Repository<Entry>) {}
