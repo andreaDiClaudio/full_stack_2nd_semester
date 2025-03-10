@@ -11,7 +11,7 @@ export const dbConfig: TypeOrmModuleOptions = {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    synchronize: false, // Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
+    synchronize: true, // Setting synchronize: true shouldn't be used in production - otherwise you can lose production data.
     entities: ['dist/**/*.entity{.ts,.js}'],
     migrations: ['dist/src/migrations/*{.ts,.js}'],
 }
