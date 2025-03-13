@@ -40,7 +40,7 @@ export default function CreateCategoryScreen() {
 
     return (
         <View style={[styles.container, { width: screenWidth * 0.5 }]}>
-            <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Create Categort</Text>
+            <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Create Category</Text>
 
             <Input variant="outline" size="xl" isDisabled={false} isInvalid={false} isReadOnly={false}>
                 <InputField

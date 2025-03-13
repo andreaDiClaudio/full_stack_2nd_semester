@@ -65,7 +65,11 @@ function EntriesScreenWrapper() {
 function MyTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+       <Tab.Screen
+        name="HomeTab"  // Unique name for navigation purposes
+        component={HomeScreen}
+        options={{ headerShown: false, tabBarLabel: 'Home' }}  // Display 'Home' in the UI
+      />
       <Tab.Screen name="Category" component={CreateCategoryScreenWrapper} options={{ headerShown: false }} />
       <Tab.Screen name="Entry" component={EntriesScreenWrapper} options={{ headerShown: false }} />
     </Tab.Navigator>
@@ -81,7 +85,7 @@ function RootStack() {
         headerTintColor: "white"
       }}
     >
-      <Stack.Screen name="Home" component={MyTabs} options={{ title: 'Categories' }} />
+      <Stack.Screen name="Home" component={MyTabs} options={{ }} />
       <Stack.Screen name="Edit" component={EditCategoryScreen} options={{ title: 'Edit Category' }} />
       <Stack.Screen name="Delete" component={DeleteCategoryScreen} options={{ title: 'Delete Category' }} />
     </Stack.Navigator>
