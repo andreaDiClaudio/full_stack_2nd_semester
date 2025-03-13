@@ -13,10 +13,11 @@ import CreateCategoryScreen from './flow_2/CreateCategory';
 import DeleteCategoryScreen from './flow_2/DeleteCategory';
 import EditCategoryScreen from './flow_2/EditCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
+import { Provider } from 'react-redux';
+import { store } from './flow_2/slices/store';
 
 //TODO
 // - Update the state management to use redux
-
 
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
@@ -65,7 +66,7 @@ function MyTabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Category" component={CreateCategoryScreenWrapper}  options={{ headerShown: false }}  />
+      <Tab.Screen name="Category" component={CreateCategoryScreenWrapper} options={{ headerShown: false }} />
       <Tab.Screen name="Entry" component={EntriesScreenWrapper} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
@@ -89,9 +90,11 @@ function RootStack() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <RootStack />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <RootStack />
+      </NavigationContainer>
+    </Provider>
   );
 }
 
