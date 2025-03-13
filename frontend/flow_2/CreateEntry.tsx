@@ -6,17 +6,21 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/flow_1/utils/types';
 import { CategoryEntity } from '@/flow_1/CategoryEntity';
+import { EntryEntity } from './entity/EntryEntity';
 
-export default function CreateCategoryScreen() {
+export default function CreateEntryScreen() {
     const { width: screenWidth } = Dimensions.get("window");
+
+    //TODO: finish to add all the input and categories fetchin for dropdown
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
 
-    const [categories, setCategories] = React.useState([] as CategoryEntity[]);
-    const [categoryName, setCategoryName] = React.useState('');
+    const [entries, setEntries] = React.useState([] as EntryEntity[]);
+    const [entryTitle, setEntryTitle] = React.useState('');
+    const [entryAmount, setEntryAmount] = React.useState('');
 
     const onAddCategory = async () => {
-        if (!categoryName.trim()) return;
+        if (!entryTitle.trim()) return;
 
         try {
             const response = await fetch('http://localhost:3000/category', {
@@ -24,32 +28,32 @@ export default function CreateCategoryScreen() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title: categoryName }),
+                body: JSON.stringify({ title: entryTitle }),
             });
             if (response.ok) {
-                setCategoryName('');
+                setEntryTitle('');
             } else {
-                console.error('Error creating category', response);
+                console.error('Error entry category', response);
             }
         } catch (error) {
-            console.error('Error creating category:', error);
+            console.error('Error entry category:', error);
         }
     };
 
 
     return (
         <View style={[styles.container, { width: screenWidth * 0.5 }]}>
-            <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Create Categort</Text>
+            <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Create Entry</Text>
 
             <Input variant="outline" size="xl" isDisabled={false} isInvalid={false} isReadOnly={false}>
                 <InputField
-                    value={categoryName}
-                    onChangeText={setCategoryName}
-                    placeholder="e.g. Food"
+                    value={entryTitle}
+                    onChangeText={setEntryTitle}
+                    placeholder="e.g. Milk"
                 />
             </Input>
 
-            <Button size="xl" variant="solid" action="primary" onPress={onAddCategory} accessibilityLabel="Create category button">
+            <Button size="xl" variant="solid" action="primary" onPress={onAddCategory} accessibilityLabel="Create Entry button">
                 <ButtonText>Create</ButtonText>
             </Button>
         </View>

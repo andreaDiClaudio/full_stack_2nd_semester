@@ -6,12 +6,19 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from './flow_1/utils/types';
-
 // Screens
-import EditScreen from './flow_2/EditCategory';
+
 import Category from './flow_1/Category';
 import CreateCategoryScreen from './flow_2/CreateCategory';
-import DeleteScreen from './flow_2/DeleyeCategory';
+import DeleteCategoryScreen from './flow_2/DeleteCategory';
+import EditCategoryScreen from './flow_2/EditCategory';
+import CreateEntryScreen from './flow_2/CreateEntry';
+
+//TODO
+// - be able to create new entries 
+// - Update the state management to use redux
+// - update the homepage to display entries grouped by categories
+
 
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
@@ -43,11 +50,25 @@ function CreateCategoryScreenWrapper() {
   );
 }
 
+function EntriesScreenWrapper() {
+  return (
+    <View style={styles.screenContainer}>
+      <GluestackUIProvider mode="light">
+        <View style={styles.contentContainer}>
+          <CreateEntryScreen />
+          <StatusBar style="auto" />
+        </View>
+      </GluestackUIProvider>
+    </View>
+  );
+}
+
 function MyTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Categories" component={HomeScreen}  options={{ headerShown: false }}  />
-      <Tab.Screen name="Create" component={CreateCategoryScreenWrapper}  options={{ headerShown: false }}  />
+      <Tab.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }}  />
+      <Tab.Screen name="Category" component={CreateCategoryScreenWrapper}  options={{ headerShown: false }}  />
+      <Tab.Screen name="Entry" component={EntriesScreenWrapper} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
@@ -62,8 +83,8 @@ function RootStack() {
       }}
     >
       <Stack.Screen name="Home" component={MyTabs} options={{ title: 'Categories' }} />
-      <Stack.Screen name="Edit" component={EditScreen} options={{ title: 'Edit' }} />
-      <Stack.Screen name="Delete" component={DeleteScreen} options={{ title: 'Delete' }} />
+      <Stack.Screen name="Edit" component={EditCategoryScreen} options={{ title: 'Edit Category' }} />
+      <Stack.Screen name="Delete" component={DeleteCategoryScreen} options={{ title: 'Delete Category' }} />
     </Stack.Navigator>
   );
 }

@@ -6,7 +6,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/flow_1/utils/types';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-export default function EditScreen() {
+export default function EditCategoryScreen() {
   const { width: screenWidth } = Dimensions.get("window");
 
   type EditScreenRouteProp = RouteProp<RootStackParamList, 'Edit'>;
