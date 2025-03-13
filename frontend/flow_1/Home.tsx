@@ -15,6 +15,7 @@ export class EntryEntity {
   ) { }
 }
 
+//TODO CONVERT FOR REDUX
 export default function Entries() {
   const { width: screenWidth } = Dimensions.get("window");
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
@@ -59,28 +60,7 @@ export default function Entries() {
     });
     setGroupedEntries(grouped);
   };
-// Handle edit and delete actions
-const handleEdit = (item: EntryEntity | { id: number; title: string; categoryId?: number }) => {
 
-  if ('category' in item) {
-    console.log('Item pressed:', item);
-    // If the item is an entry (has categoryId)
-    navigation.navigate('Edit', {
-      entityId: item.id,
-      entityTitle: item.title,
-      amount: item.amount,
-      category: item.category,
-      entityType: 'entry',
-    });
-  } else {
-    // If the item is a category (has id and title, and no categoryId)
-    navigation.navigate('Edit', {
-      entityId: item.id,
-      entityTitle: item.title,
-      entityType: 'category',
-    });
-  }
-};
 
 
   // Handle checkbox selection
@@ -96,6 +76,15 @@ const handleEdit = (item: EntryEntity | { id: number; title: string; categoryId?
     });
   };
 
+  //TODO
+  const handleCategoryEdit = () => {
+    console.log("pressed category")
+  };
+
+  //TODO
+  const handleEntryEdit = () => {
+    console.log("pressed entry")
+  };
 
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
@@ -111,7 +100,7 @@ const handleEdit = (item: EntryEntity | { id: number; title: string; categoryId?
               <View key={categoryId} style={styles.categoryContainer}>
                 <View style={styles.categoryHeader}>
                   <Text style={styles.categoryTitle}>{category.title}</Text>
-                  <TouchableOpacity onPress={() => handleEdit({ id: category.id, title: category.title })}>
+                  <TouchableOpacity onPress={() => handleCategoryEdit()}>
                     <Text style={styles.dots}>•••</Text>
                   </TouchableOpacity>
                 </View>
@@ -122,7 +111,7 @@ const handleEdit = (item: EntryEntity | { id: number; title: string; categoryId?
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
                     <View style={styles.todoItemContainer}>
-                      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.todoItem}>
+                      <TouchableOpacity onPress={() => handleEntryEdit()} style={styles.todoItem}>
                         <View style={styles.checkboxContainer}>
                           <TouchableOpacity
                             style={styles.checkbox}
@@ -144,7 +133,7 @@ const handleEdit = (item: EntryEntity | { id: number; title: string; categoryId?
                       </TouchableOpacity>
                       <View style={styles.dotsContainer}>
                         <TouchableOpacity
-                          onPress={() => handleEdit(item)}
+                          onPress={() => handleCategoryEdit()}
                           style={styles.actionButton}
                         >
                           <Text style={styles.dots}>•••</Text>

@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -11,9 +11,11 @@ import Category from './flow_1/Home';
 import CreateCategoryScreen from './flow_2/CreateCategory';
 import DeleteCategoryScreen from './flow_2/DeleteCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
+;
 import { Provider } from 'react-redux';
 import { store } from './flow_2/slices/store';
-import EditScreen from './flow_2/Edit';
+import EditCategoryScreen from './flow_2/EditCategory';
+import EditEntryScreen from './flow_2/EditEntry';
 
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
@@ -82,13 +84,8 @@ function RootStack() {
       }}
     >
       <Stack.Screen name="Home" component={MyTabs} />
-      <Stack.Screen 
-        name="Edit" 
-        component={EditScreen} 
-        options={({ route }) => ({
-          title: route.params?.entityType === 'category' ? 'Edit Category' : 'Edit Entry'
-        })}
-      />
+      <Stack.Screen name="EditCategory" component={EditCategoryScreen} options={{ title: 'Edit Category' }} />
+      <Stack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit Entry' }} />
       <Stack.Screen name="Delete" component={DeleteCategoryScreen} options={{ title: 'Delete Category' }} />
     </Stack.Navigator>
   );

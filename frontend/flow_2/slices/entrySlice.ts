@@ -1,12 +1,14 @@
 // entrySlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
+import { EntryEntity } from '../entity/EntryEntity';
 
 interface EntryState {
   entryTitle: string;
   entryAmount: string;
   selectedCategory: string | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'; // To handle loading state
+  entries: EntryEntity[];  // Add entries here
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
@@ -14,9 +16,27 @@ const initialState: EntryState = {
   entryTitle: '',
   entryAmount: '',
   selectedCategory: null,
+  entries: [],  // Initialize entries as an empty array
   status: 'idle',
   error: null,
 };
+
+export const fetchEntries = createAsyncThunk('entries/fetchEntries', async () => {
+    try {
+      const response = await fetch('http://localhost:3000/entry');
+      if (!response.ok) {
+        throw new Error('Failed to fetch entries');
+      }
+      const data = await response.json();
+    
+      console.log(data.data);
+      
+      return data.data; // Return the fetched entries
+    } catch (error) {
+      return ('Error fetching entries');
+    }
+  }
+);
 
 // Define async thunk for creating an entry
 export const createEntry = createAsyncThunk(
@@ -38,7 +58,7 @@ export const createEntry = createAsyncThunk(
 
       const data = await response.json();
       console.log(data.data);
-      return data.data; // Return the created entry from the server
+      return data; // Return the created entry from the server
     } catch (error) {
       return rejectWithValue('Error creating entry');
     }
