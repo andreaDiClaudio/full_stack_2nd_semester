@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { CategoryEntity } from '@/flow_1/CategoryEntity';
 
+// Create async thunk to fetch categories
+export const fetchCategories = createAsyncThunk('category/fetchCategories', async () => {
+  const response = await fetch('http://localhost:3000/category');
+  const data = await response.json();
+  return data.data; // Assuming 'data' contains the categories
+});
+
 // Async thunk to create a category
 export const createCategory = createAsyncThunk(
   'category/createCategory',
@@ -18,9 +25,7 @@ export const createCategory = createAsyncThunk(
     }
 
     const data = await response.json();
-    console.log(data.data);
-    
-    return data; // Assuming the response contains the created category
+    return data.data; // Return the created category (assuming it contains `data`)
   }
 );
 
@@ -46,6 +51,17 @@ const categorySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchCategories.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categories = action.payload; // Replace categories with the fetched data
+        state.loading = false;
+      })
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch categories';
+      })
       .addCase(createCategory.pending, (state) => {
         state.loading = true;
       })

@@ -10,7 +10,7 @@ import { RootStackParamList } from '@/flow_1/utils/types';
 import { CategoryEntity } from '@/flow_1/CategoryEntity';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from './slices/store';
-import { setCategories } from './slices/categorySlice';
+import { fetchCategories, setCategories } from './slices/categorySlice';
 import { createEntry, setEntryAmount, setEntryTitle, setSelectedCategory } from './slices/entrySlice';
 
 export default function CreateEntryScreen() {
@@ -28,19 +28,10 @@ export default function CreateEntryScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchCategories();
-    }, [])
+      dispatch(fetchCategories());
+    }, [dispatch])
   );
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/category');
-      const data = await response.json();
-      dispatch(setCategories(data.data));
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
+  
 
   const onAddEntry = () => {
     const amount = parseInt(entryAmount, 10);
