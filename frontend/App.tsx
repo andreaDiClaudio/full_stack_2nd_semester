@@ -8,16 +8,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from './flow_1/utils/types';
 // Screens
 
-import Category from './flow_1/Category';
+import Category from './flow_1/Home';
 import CreateCategoryScreen from './flow_2/CreateCategory';
 import DeleteCategoryScreen from './flow_2/DeleteCategory';
 import EditCategoryScreen from './flow_2/EditCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
 
 //TODO
-// - be able to create new entries 
 // - Update the state management to use redux
-// - update the homepage to display entries grouped by categories
 
 
 // Create Stack and Tab Navigators
@@ -66,7 +64,7 @@ function EntriesScreenWrapper() {
 function MyTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen}  options={{ headerShown: false }}  />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Category" component={CreateCategoryScreenWrapper}  options={{ headerShown: false }}  />
       <Tab.Screen name="Entry" component={EntriesScreenWrapper} options={{ headerShown: false }} />
     </Tab.Navigator>

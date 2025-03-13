@@ -12,6 +12,7 @@ export default function CreateCategoryScreen() {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
 
+
     const [categories, setCategories] = React.useState([] as CategoryEntity[]);
     const [categoryName, setCategoryName] = React.useState('');
 
