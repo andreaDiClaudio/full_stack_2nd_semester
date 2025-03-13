@@ -1,11 +1,17 @@
+import { CategoryEntity } from "../CategoryEntity";
+
 export type RootStackParamList = {
   Home: undefined;
-  Edit: {
-    categoryId: number,
-    categoryTitle: string
+  Edit: { 
+    entityId: number; 
+    entityTitle: string; 
+    amount?: number,
+    category?: CategoryEntity
+    entityType: 'category' | 'entry';
   };
-  Delete: {
-    categoryId: number,
-    categoryTitle: string
+  Delete: { 
+    entityId: number; 
+    entityTitle: string; 
+    entityType: 'category' | 'entry' 
   };
 };

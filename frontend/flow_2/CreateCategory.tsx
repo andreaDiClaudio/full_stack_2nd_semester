@@ -1,42 +1,28 @@
-import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Button, ButtonText } from "@/components/ui/button";
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input, InputField } from '@/components/ui/input';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@/flow_1/utils/types';
-import { CategoryEntity } from '@/flow_1/CategoryEntity';
+import { useDispatch } from 'react-redux';
+import { createCategory } from './slices/categorySlice';
+import { AppDispatch } from './slices/store';
 
 export default function CreateCategoryScreen() {
     const { width: screenWidth } = Dimensions.get("window");
+    const dispatch = useDispatch<AppDispatch>();
 
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
-
-
-    const [categories, setCategories] = React.useState([] as CategoryEntity[]);
-    const [categoryName, setCategoryName] = React.useState('');
+    const [categoryName, setCategoryName] = useState('');
 
     const onAddCategory = async () => {
         if (!categoryName.trim()) return;
 
         try {
-            const response = await fetch('http://localhost:3000/category', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ title: categoryName }),
-            });
-            if (response.ok) {
-                setCategoryName('');
-            } else {
-                console.error('Error creating category', response);
-            }
+            // Dispatch the createCategory async action
+            await dispatch(createCategory(categoryName));
+            setCategoryName(''); // Clear the input field on success
         } catch (error) {
             console.error('Error creating category:', error);
         }
     };
-
 
     return (
         <View style={[styles.container, { width: screenWidth * 0.5 }]}>
@@ -63,29 +49,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         rowGap: 20,
-        paddingTop:200
-    },
-
-    listContainer: {
-        height: 300,
-        width: "100%",
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        padding: 10,
-    },
-
-    todoItem: {
-        padding: 10,
-        marginBottom: 5,
-        backgroundColor: "#f9f9f9",
-        borderRadius: 5,
-        flexDirection: "row",
-        alignItems: "center",
-    },
-
-    checkboxText: {
-        fontSize: 25,
+        paddingTop: 200,
     },
 });

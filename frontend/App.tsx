@@ -7,17 +7,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from './flow_1/utils/types';
 // Screens
-
 import Category from './flow_1/Home';
 import CreateCategoryScreen from './flow_2/CreateCategory';
 import DeleteCategoryScreen from './flow_2/DeleteCategory';
-import EditCategoryScreen from './flow_2/EditCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
 import { Provider } from 'react-redux';
 import { store } from './flow_2/slices/store';
-
-//TODO
-// - Update the state management to use redux
+import EditScreen from './flow_2/Edit';
 
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
@@ -65,10 +61,10 @@ function EntriesScreenWrapper() {
 function MyTabs() {
   return (
     <Tab.Navigator>
-       <Tab.Screen
-        name="HomeTab"  // Unique name for navigation purposes
+      <Tab.Screen
+        name="HomeTab"
         component={HomeScreen}
-        options={{ headerShown: false, tabBarLabel: 'Home' }}  // Display 'Home' in the UI
+        options={{ headerShown: false, tabBarLabel: 'Home' }}
       />
       <Tab.Screen name="Category" component={CreateCategoryScreenWrapper} options={{ headerShown: false }} />
       <Tab.Screen name="Entry" component={EntriesScreenWrapper} options={{ headerShown: false }} />
@@ -85,8 +81,14 @@ function RootStack() {
         headerTintColor: "white"
       }}
     >
-      <Stack.Screen name="Home" component={MyTabs} options={{ }} />
-      <Stack.Screen name="Edit" component={EditCategoryScreen} options={{ title: 'Edit Category' }} />
+      <Stack.Screen name="Home" component={MyTabs} />
+      <Stack.Screen 
+        name="Edit" 
+        component={EditScreen} 
+        options={({ route }) => ({
+          title: route.params?.entityType === 'category' ? 'Edit Category' : 'Edit Entry'
+        })}
+      />
       <Stack.Screen name="Delete" component={DeleteCategoryScreen} options={{ title: 'Delete Category' }} />
     </Stack.Navigator>
   );

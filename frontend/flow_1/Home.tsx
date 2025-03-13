@@ -59,31 +59,29 @@ export default function Entries() {
     });
     setGroupedEntries(grouped);
   };
+// Handle edit and delete actions
+const handleEdit = (item: EntryEntity | { id: number; title: string; categoryId?: number }) => {
 
-  // Handle edit and delete actions
-  const handleEdit = (item: EntryEntity) => {
-    Alert.alert('Edit Entry', `Edit ${item.title}`);
-    // Navigate to edit screen
-    //TODO
-    // navigation.navigate('Edit', { entryId: item.id, entryTitle: item.title, categoryId: item.categoryId });
-  };
+  if ('category' in item) {
+    console.log('Item pressed:', item);
+    // If the item is an entry (has categoryId)
+    navigation.navigate('Edit', {
+      entityId: item.id,
+      entityTitle: item.title,
+      amount: item.amount,
+      category: item.category,
+      entityType: 'entry',
+    });
+  } else {
+    // If the item is a category (has id and title, and no categoryId)
+    navigation.navigate('Edit', {
+      entityId: item.id,
+      entityTitle: item.title,
+      entityType: 'category',
+    });
+  }
+};
 
-  const handleDelete = (item: EntryEntity) => {
-    Alert.alert('Delete Entry', `Are you sure you want to delete ${item.title}?`, [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'OK',
-        onPress: () => {
-          // Handle delete logic here
-          console.log('Deleted entry', item.id);
-          // Remove the entry from state or call API to delete
-        },
-      },
-    ]);
-  };
 
   // Handle checkbox selection
   const handleToggleSelect = (entryId: number) => {
@@ -98,12 +96,6 @@ export default function Entries() {
     });
   };
 
-  // Function to handle item press
-  const handlePressEntry = (entry: EntryEntity) => {
-    console.log('Entry pressed:', entry);
-    // TODO fix 
-    //navigation.navigate('Edit', { entryId: entry.id, entryTitle: entry.title, categoryId: entry.categoryId });
-  };
 
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
@@ -119,7 +111,7 @@ export default function Entries() {
               <View key={categoryId} style={styles.categoryContainer}>
                 <View style={styles.categoryHeader}>
                   <Text style={styles.categoryTitle}>{category.title}</Text>
-                  <TouchableOpacity onPress={() => console.log('Category options')}>
+                  <TouchableOpacity onPress={() => handleEdit({ id: category.id, title: category.title })}>
                     <Text style={styles.dots}>•••</Text>
                   </TouchableOpacity>
                 </View>
@@ -130,7 +122,7 @@ export default function Entries() {
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
                     <View style={styles.todoItemContainer}>
-                      <TouchableOpacity onPress={() => handlePressEntry(item)} style={styles.todoItem}>
+                      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.todoItem}>
                         <View style={styles.checkboxContainer}>
                           <TouchableOpacity
                             style={styles.checkbox}
@@ -149,15 +141,14 @@ export default function Entries() {
                             {item.title}
                           </Text>
                         </View>
-                        <Text style={styles.amountText}>{item.amount}</Text>
                       </TouchableOpacity>
                       <View style={styles.dotsContainer}>
-                      <TouchableOpacity
-                        onPress={() => handleEdit(item)}
-                        style={styles.actionButton}
-                      >
-                        <Text style={styles.dots}>•••</Text>
-                      </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => handleEdit(item)}
+                          style={styles.actionButton}
+                        >
+                          <Text style={styles.dots}>•••</Text>
+                        </TouchableOpacity>
                       </View>
                     </View>
                   )}
@@ -206,7 +197,7 @@ const styles = StyleSheet.create({
   dotsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight:10
+    paddingRight: 10
   },
 
   dots: {
