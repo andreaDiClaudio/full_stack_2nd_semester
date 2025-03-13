@@ -1,3 +1,4 @@
+// CreateEntryScreen.tsx
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Button, ButtonText } from "@/components/ui/button";
 import React, { useEffect } from 'react';
@@ -8,20 +9,22 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/flow_1/utils/types';
 import { CategoryEntity } from '@/flow_1/CategoryEntity';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './slices/store';
+import { AppDispatch, RootState } from './slices/store';
 import { setCategories } from './slices/categorySlice';
-import { resetEntryForm, setEntryAmount, setEntryTitle, setSelectedCategory } from './slices/entrySlice';
-
+import { createEntry, setEntryAmount, setEntryTitle, setSelectedCategory } from './slices/entrySlice';
 
 export default function CreateEntryScreen() {
   const { width: screenWidth } = Dimensions.get("window");
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>(); 
 
   const entryTitle = useSelector((state: RootState) => state.entry.entryTitle);
   const entryAmount = useSelector((state: RootState) => state.entry.entryAmount);
   const selectedCategory = useSelector((state: RootState) => state.entry.selectedCategory);
   const categories = useSelector((state: RootState) => state.category.categories);
+  const entryStatus = useSelector((state: RootState) => state.entry.status);
+  const entryError = useSelector((state: RootState) => state.entry.error);
+  
 
   useFocusEffect(
     React.useCallback(() => {
@@ -39,29 +42,21 @@ export default function CreateEntryScreen() {
     }
   };
 
-  const onAddEntry = async () => {
+  const onAddEntry = () => {
     const amount = parseInt(entryAmount, 10);
     if (!entryTitle.trim() || isNaN(amount) || amount < 1 || amount > 99 || !selectedCategory) {
       console.error("Invalid input");
       return;
     }
 
-    try {
-      const response = await fetch('http://localhost:3000/entry', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: entryTitle, amount, categoryId: selectedCategory }),
-      });
-      if (response.ok) {
-        dispatch(resetEntryForm());
-      } else {
-        console.error('Error creating entry', response);
-      }
-    } catch (error) {
-      console.error('Error creating entry:', error);
-    }
+    const entryData = {
+      title: entryTitle,
+      amount,
+      categoryId: selectedCategory,
+    };
+
+    // Dispatch the createEntry async action
+    dispatch(createEntry(entryData));
   };
 
   return (
@@ -113,9 +108,14 @@ export default function CreateEntryScreen() {
         </SelectPortal>
       </Select>
 
+      {/* Create Button */}
       <Button size="xl" variant="solid" action="primary" onPress={onAddEntry}>
         <ButtonText>Create</ButtonText>
       </Button>
+
+      {/* Loading/Error Feedback */}
+      {entryStatus === 'loading' && <Text>Loading...</Text>}
+      {entryStatus === 'failed' && <Text style={{ color: 'red' }}>{entryError}</Text>}
     </View>
   );
 }
