@@ -4,6 +4,9 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from './utils/types';
 import { Center } from '@gluestack-ui/config/build/theme';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/flow_2/slices/store';
+import { fetchEntries } from '@/flow_2/slices/entrySlice';
 
 export class EntryEntity {
   constructor(
@@ -17,37 +20,31 @@ export class EntryEntity {
 
 //TODO CONVERT FOR REDUX
 export default function Entries() {
-  const { width: screenWidth } = Dimensions.get("window");
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [entries, setEntries] = useState<EntryEntity[]>([]);
+  // Access entries from the Redux state
+  const { entries, status, error } = useSelector((state: RootState) => state.entry);
   const [groupedEntries, setGroupedEntries] = useState<Record<string, EntryEntity[]>>({});
   const [selectedEntries, setSelectedEntries] = useState<Set<number>>(new Set()); // Track selected entries
+  const { width: screenWidth } = Dimensions.get("window");
 
-  // Fetch entries on component load
+  //TODO Calling more than once, is it normal?
   useEffect(() => {
-    fetchEntries();
-  }, []);
+    // Dispatch fetchEntries to load data when the component mounts
+    dispatch(fetchEntries());
+  }, [dispatch]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchEntries();
-    }, [])
-  );
-
-  const fetchEntries = async () => {
-    try {
-      const response = await fetch('http://localhost:3000/entry');
-      const data = await response.json();
-      setEntries(data.data);
-      groupEntriesByCategory(data.data);  // Fix grouping by category.id
-    } catch (error) {
-      console.error('Error fetching entries:', error);
+  // Watch for changes in `entries` and group them by category
+  useEffect(() => {
+    if (entries.length > 0) {
+      groupEntriesByCategory(entries);
     }
-  };
-
+  }, [entries]); // Trigger when `entries` changes
+  
   // Group entries by category
   const groupEntriesByCategory = (entries: EntryEntity[]) => {
+    console.log(entries);
+
     const grouped: Record<string, EntryEntity[]> = {};
     entries.forEach((entry) => {
       const categoryId = entry.category ? entry.category.id.toString() : null;  // Access category.id
@@ -64,6 +61,7 @@ export default function Entries() {
 
 
   // Handle checkbox selection
+
   const handleToggleSelect = (entryId: number) => {
     setSelectedEntries((prevSelectedEntries) => {
       const newSelectedEntries = new Set(prevSelectedEntries);

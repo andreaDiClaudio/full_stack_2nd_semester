@@ -86,13 +86,29 @@ const entrySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Handling createEntry async thunk
       .addCase(createEntry.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(createEntry.fulfilled, (state) => {
+      .addCase(createEntry.fulfilled, (state, action: PayloadAction<EntryEntity>) => {
         state.status = 'succeeded';
+        // Optionally, add the new entry to the entries list if needed
+        state.entries.push(action.payload);
       })
       .addCase(createEntry.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
+
+      // Handling fetchEntries async thunk
+      .addCase(fetchEntries.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchEntries.fulfilled, (state, action: PayloadAction<EntryEntity[]>) => {
+        state.status = 'succeeded';
+        state.entries = action.payload; // Update the entries with the fetched data
+      })
+      .addCase(fetchEntries.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       });
