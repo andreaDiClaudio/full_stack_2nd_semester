@@ -47,6 +47,32 @@ function CreateCategoryScreenWrapper() {
   );
 }
 
+function EditCategoryScreenWrapper() {
+  return (
+    <View style={styles.screenContainer}>
+      <GluestackUIProvider mode="light">
+        <View style={styles.contentContainer}>
+          <EditCategoryScreen />
+          <StatusBar style="auto" />
+        </View>
+      </GluestackUIProvider>
+    </View>
+  );
+}
+
+function EditEntryScreenWrapper() {
+  return (
+    <View style={styles.screenContainer}>
+      <GluestackUIProvider mode="light">
+        <View style={styles.contentContainer}>
+          <EditEntryScreen />
+          <StatusBar style="auto" />
+        </View>
+      </GluestackUIProvider>
+    </View>
+  );
+}
+
 function EntriesScreenWrapper() {
   return (
     <View style={styles.screenContainer}>
@@ -84,9 +110,8 @@ function RootStack() {
       }}
     >
       <Stack.Screen name="Home" component={MyTabs} />
-      <Stack.Screen name="EditCategory" component={EditCategoryScreen} options={{ title: 'Edit Category' }} />
-      <Stack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit Entry' }} />
-      <Stack.Screen name="Delete" component={DeleteCategoryScreen} options={{ title: 'Delete Category' }} />
+      <Stack.Screen name="EditCategory" component={EditCategoryScreenWrapper} options={{ title: 'Edit Category' }} />
+      <Stack.Screen name="EditEntry" component={EditCategoryScreenWrapper} options={{ title: 'Edit Entry' }} />
     </Stack.Navigator>
   );
 }

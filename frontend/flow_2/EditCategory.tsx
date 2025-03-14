@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Button, ButtonText } from "@/components/ui/button";
 import React, { useState, useEffect } from 'react';
 import { Input, InputField } from '@/components/ui/input';
 import { useDispatch } from 'react-redux';
@@ -10,6 +9,7 @@ import { setCategories, updateCategory } from './slices/categorySlice';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/flow_1/utils/types';
 import { fetchEntries } from './slices/entrySlice';
+import { Button, ButtonText } from '@/components/ui/button';
 
 export default function EditCategoryScreen() {
   const { width: screenWidth } = Dimensions.get("window");
@@ -53,6 +53,12 @@ export default function EditCategoryScreen() {
     }
   };
 
+  const onDeleteCategory = async () => {
+      if (!categoryName.trim()) return;
+
+      console.log(category);
+      
+  }
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
       <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Edit Category</Text>
@@ -65,8 +71,17 @@ export default function EditCategoryScreen() {
         />
       </Input>
 
-      <Button size="xl" variant="solid" action="primary" onPress={onUpdateCategory} accessibilityLabel="Update category button">
+      <Button size="xl" action="primary" onPress={onUpdateCategory} accessibilityLabel="Update category button">
         <ButtonText>Update</ButtonText>
+      </Button>
+
+      <Button
+        size="xl"
+        variant="solid"
+        onPress={onDeleteCategory}
+        accessibilityLabel="Delete category button"
+      >
+        <ButtonText style={{ color: 'red' }}>Delete</ButtonText>
       </Button>
     </View>
   );

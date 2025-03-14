@@ -46,7 +46,7 @@ export const updateCategory = createAsyncThunk(
     }
 
     const data = await response.json();
-    return data.data;
+    return data.data; // Return the updated category (assuming it contains `data`)
   }
 );
 
@@ -70,13 +70,6 @@ const categorySlice = createSlice({
     setCategories: (state, action: PayloadAction<CategoryEntity[]>) => {
       state.categories = action.payload;
     },
-    updateCategoryInList: (state, action: PayloadAction<CategoryEntity>) => {
-      const updatedCategory = action.payload;
-      const index = state.categories.findIndex(category => category.id === updatedCategory.id);
-      if (index !== -1) {
-        state.categories[index] = updatedCategory; // Replace the category with the updated one
-      }
-    }
   },
   extraReducers: (builder) => {
     builder
@@ -120,6 +113,6 @@ const categorySlice = createSlice({
   },
 });
 
-export const { setCategories, updateCategoryInList} = categorySlice.actions;
+export const { setCategories } = categorySlice.actions;
 
 export default categorySlice.reducer;
