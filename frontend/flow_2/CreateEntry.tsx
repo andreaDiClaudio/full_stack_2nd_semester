@@ -11,12 +11,12 @@ import { CategoryEntity } from '@/flow_1/CategoryEntity';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from './slices/store';
 import { fetchCategories, setCategories } from './slices/categorySlice';
-import { createEntry, setEntryAmount, setEntryTitle, setSelectedCategory } from './slices/entrySlice';
+import { createEntry, fetchEntries, resetEntryForm, setEntryAmount, setEntryTitle, setSelectedCategory } from './slices/entrySlice';
 
 export default function CreateEntryScreen() {
   const { width: screenWidth } = Dimensions.get("window");
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
-  const dispatch = useDispatch<AppDispatch>(); 
+  const dispatch = useDispatch<AppDispatch>();
 
   const entryTitle = useSelector((state: RootState) => state.entry.entryTitle);
   const entryAmount = useSelector((state: RootState) => state.entry.entryAmount);
@@ -24,16 +24,16 @@ export default function CreateEntryScreen() {
   const categories = useSelector((state: RootState) => state.category.categories);
   const entryStatus = useSelector((state: RootState) => state.entry.status);
   const entryError = useSelector((state: RootState) => state.entry.error);
-  
+
 
   useFocusEffect(
     React.useCallback(() => {
       dispatch(fetchCategories());
     }, [dispatch])
   );
-  
 
-  const onAddEntry = () => {
+
+  const onAddEntry = async () => {
     const amount = parseInt(entryAmount, 10);
     if (!entryTitle.trim() || isNaN(amount) || amount < 1 || amount > 99 || !selectedCategory) {
       console.error("Invalid input");
@@ -47,7 +47,18 @@ export default function CreateEntryScreen() {
     };
 
     // Dispatch the createEntry async action
-    dispatch(createEntry(entryData));
+    const response = await dispatch(createEntry(entryData));
+    // Check if the response is successful (you may have a success flag in your response payload)
+    if (response?.meta?.requestStatus === 'fulfilled') {
+      console.log('Category updated successfully')
+
+      // Reset entry-related state to default values
+      dispatch(resetEntryForm());
+
+      // Re-fetch the updated categories (triggering a new dispatch for fresh data)
+      dispatch(fetchEntries());
+      navigation.goBack(); // Or use any other navigation logic as needed
+    }
   };
 
   return (
