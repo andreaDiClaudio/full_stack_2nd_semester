@@ -21,6 +21,7 @@ export class EntryEntity {
 //TODO CONVERT FOR REDUX
 export default function Entries() {
   const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
 
   // Access entries from the Redux state
   const { entries, status, error } = useSelector((state: RootState) => state.entry);
@@ -43,8 +44,6 @@ export default function Entries() {
   
   // Group entries by category
   const groupEntriesByCategory = (entries: EntryEntity[]) => {
-    console.log(entries);
-
     const grouped: Record<string, EntryEntity[]> = {};
     entries.forEach((entry) => {
       const categoryId = entry.category ? entry.category.id.toString() : null;  // Access category.id
@@ -74,15 +73,15 @@ export default function Entries() {
     });
   };
 
-  //TODO
-  const handleCategoryEdit = () => {
-    console.log("pressed category")
+  //TODO implement
+  const handleCategoryEdit = (categoryId: string) => {
+    navigation.navigate('EditCategory', { categoryId });
   };
 
-  //TODO
-  const handleEntryEdit = () => {
-    console.log("pressed entry")
-  };
+  //TODO implement
+const handleEntryEdit = (entryId: string) => {
+  navigation.navigate('EditEntry', { entryId });
+};
 
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
@@ -98,7 +97,7 @@ export default function Entries() {
               <View key={categoryId} style={styles.categoryContainer}>
                 <View style={styles.categoryHeader}>
                   <Text style={styles.categoryTitle}>{category.title}</Text>
-                  <TouchableOpacity onPress={() => handleCategoryEdit()}>
+                  <TouchableOpacity onPress={() => handleCategoryEdit(category.id.toString())}>
                     <Text style={styles.dots}>•••</Text>
                   </TouchableOpacity>
                 </View>
@@ -109,7 +108,7 @@ export default function Entries() {
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
                     <View style={styles.todoItemContainer}>
-                      <TouchableOpacity onPress={() => handleEntryEdit()} style={styles.todoItem}>
+                      <TouchableOpacity style={styles.todoItem}>
                         <View style={styles.checkboxContainer}>
                           <TouchableOpacity
                             style={styles.checkbox}
@@ -131,7 +130,7 @@ export default function Entries() {
                       </TouchableOpacity>
                       <View style={styles.dotsContainer}>
                         <TouchableOpacity
-                          onPress={() => handleCategoryEdit()}
+                          onPress={() => handleEntryEdit(category.id.toString())}
                           style={styles.actionButton}
                         >
                           <Text style={styles.dots}>•••</Text>

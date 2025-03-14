@@ -28,8 +28,6 @@ export const fetchEntries = createAsyncThunk('entries/fetchEntries', async () =>
         throw new Error('Failed to fetch entries');
       }
       const data = await response.json();
-    
-      console.log(data.data);
       
       return data.data; // Return the fetched entries
     } catch (error) {
@@ -57,7 +55,6 @@ export const createEntry = createAsyncThunk(
 
 
       const data = await response.json();
-      console.log(data.data);
       return data; // Return the created entry from the server
     } catch (error) {
       return rejectWithValue('Error creating entry');

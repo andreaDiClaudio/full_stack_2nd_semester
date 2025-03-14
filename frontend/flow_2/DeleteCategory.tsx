@@ -12,6 +12,7 @@ export default function DeleteCategoryScreen() {
     type EditScreenRouteProp = RouteProp<RootStackParamList, 'Edit'>;
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Delete'>>();
 
+    //TODO FIX
     const route = useRoute<EditScreenRouteProp>();
     const { categoryId, categoryTitle } = route.params;
 
