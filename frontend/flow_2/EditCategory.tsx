@@ -16,7 +16,7 @@ export default function EditCategoryScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const route = useRoute();
   const { category } = route.params as { category: { id: number; title: string; description?: string } };
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'EditCategory'>>();
 
   const [categoryName, setCategoryName] = useState(category.title);
   const [categoryDescription, setCategoryDescription] = useState(category.description || '');

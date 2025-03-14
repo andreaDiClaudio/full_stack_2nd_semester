@@ -72,15 +72,15 @@ export default function Entries() {
     });
   };
 
-  //TODO implement
   const handleCategoryEdit = (category: CategoryEntity) => {
+    console.log("Should not print");
     navigation.navigate('EditCategory', { category });
   };
 
   //TODO implement
-const handleEntryEdit = (entryId: string) => {
-  navigation.navigate('EditEntry', { entryId });
-};
+  const handleEntryEdit = (entry: EntryEntity) => {
+    navigation.navigate('EditEntry', { entry });
+  };
 
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
@@ -129,7 +129,7 @@ const handleEntryEdit = (entryId: string) => {
                       </TouchableOpacity>
                       <View style={styles.dotsContainer}>
                         <TouchableOpacity
-                          onPress={() => handleEntryEdit(category.id.toString())}
+                          onPress={() => handleEntryEdit(item)}
                           style={styles.actionButton}
                         >
                           <Text style={styles.dots}>•••</Text>

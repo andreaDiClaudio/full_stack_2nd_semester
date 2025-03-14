@@ -111,7 +111,7 @@ function RootStack() {
     >
       <Stack.Screen name="Home" component={MyTabs} />
       <Stack.Screen name="EditCategory" component={EditCategoryScreenWrapper} options={{ title: 'Edit Category' }} />
-      <Stack.Screen name="EditEntry" component={EditCategoryScreenWrapper} options={{ title: 'Edit Entry' }} />
+      <Stack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit Entry' }} />
     </Stack.Navigator>
   );
 }

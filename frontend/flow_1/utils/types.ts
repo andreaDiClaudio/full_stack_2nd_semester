@@ -1,12 +1,8 @@
+import { EntryEntity } from "@/flow_2/entity/EntryEntity";
 import { CategoryEntity } from "../CategoryEntity";
 
 export type RootStackParamList = {
   Home: undefined;
   EditCategory: { category: CategoryEntity };
-  EditEntry: { entryId: string }; 
-  Delete: { 
-    entityId: number; 
-    entityTitle: string; 
-    entityType: 'category' | 'entry' 
-  };
+  EditEntry: { entry: EntryEntity }; 
 };
