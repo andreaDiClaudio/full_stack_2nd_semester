@@ -13,6 +13,7 @@ import { CategoryEntity } from '@/flow_1/CategoryEntity';
 import { Select, SelectBackdrop, SelectContent, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
 import { fetchCategories } from './slices/categorySlice';
 
+//TODO: delete
 const EditEntryScreen = () => {
     const { width: screenWidth } = Dimensions.get("window");
     const dispatch = useDispatch<AppDispatch>();
