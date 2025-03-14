@@ -13,6 +13,6 @@ export class Category {
     @Column({ default: '' })
     description: string
 
-    @OneToMany(() => Entry, (entry) => entry.category)
+    @OneToMany(() => Entry, (entry) => entry.category, { onDelete: 'CASCADE' })
     entries: Entry[]
 }

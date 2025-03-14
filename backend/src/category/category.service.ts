@@ -101,8 +101,6 @@ export class CategoryService {
     // Edit (Update) Category function
     async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<ResponseDto> {
         try {
-            console.log("reached");
-            
             // Check if the category exists
             const category = await this.categoryRepository.findOne({ where: { id } });
             if (!category) {
@@ -123,24 +121,15 @@ export class CategoryService {
             };
 
         } catch (error) {
-            console.log(error);
-            
             if (error instanceof CategoryNotFoundException) {
-                throw new HttpException(
-                    {
-                        success: false,
-                        message: `Category with ID ${id} not found`,  // Add specific error message
-                        error: error.message
-                    },
-                    HttpStatus.NOT_FOUND  // Return 404 for not found errors
-                );
+                throw error;
             }
 
             throw new HttpException(
                 {
                     success: false,
                     message: 'Error updating category',
-                    error: error?.message || 'Unknown error'
+                    error: error || 'Unknown error'
                 },
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
@@ -149,16 +138,23 @@ export class CategoryService {
 
     async delete(id: number): Promise<ResponseDto> {
         try {
-            // Check if the category exists
-            await this.findById(id);
+            // Check if the category exists and load related entries
+            const category = await this.categoryRepository.findOne({
+                where: { id }, // Find by ID
+                relations: ['entries'], // Load related entries
+            });
 
-            // Proceed with deletion
-            await this.categoryRepository.delete(id);
+            if (!category) {
+                throw new CategoryNotFoundException(id);
+            }
+
+            // Proceed with deletion (cascade delete will be triggered automatically)
+            await this.categoryRepository.remove(category); // Use remove() instead of delete()
 
             return {
                 success: true,
-                message: `Category with ID ${id} deleted successfully`,
-                statusCode: HttpStatus.OK
+                message: `Category with ID ${id} and all related entries deleted successfully`,
+                statusCode: HttpStatus.OK,
             };
         } catch (error) {
             if (error instanceof CategoryNotFoundException) {
@@ -169,11 +165,10 @@ export class CategoryService {
                 {
                     success: false,
                     message: 'Error deleting category',
-                    error: error || 'Unknown error'
+                    error: error?.message || 'Unknown error',
                 },
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }
-
 }

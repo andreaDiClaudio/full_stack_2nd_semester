@@ -50,6 +50,23 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
+// Async thunk to delete a category
+export const deleteCategory = createAsyncThunk(
+  'category/deleteCategory',
+  async (categoryId: number) => {
+    const response = await fetch(`http://localhost:3000/category/${categoryId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      console.log(response);
+      
+      throw new Error('Failed to delete category');
+    }
+
+    return categoryId; // Return the ID of the deleted category
+  }
+);
 
 interface CategoryState {
   categories: CategoryEntity[];
@@ -95,21 +112,26 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.error.message || 'Failed to create category';
       })
-      .addCase(updateCategory.pending, (state) => {
-        state.loading = true;
-      })
       .addCase(updateCategory.fulfilled, (state, action) => {
         const index = state.categories.findIndex(cat => cat.id === action.payload.id);
         if (index !== -1) {
           state.categories[index] = action.payload;
         }
-        state.loading = false;
       })
       .addCase(updateCategory.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.error.message || 'Failed to update category';
+      })
+      .addCase(deleteCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.categories = state.categories.filter((category) => category.id !== action.payload); // Remove the deleted category by its ID
+        state.loading = false;
+      })
+      .addCase(deleteCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to delete category';
       });
-      ;
   },
 });
 

@@ -12,6 +12,6 @@ export class Entry {
     @Column({ nullable: false })
     amount: number
 
-    @ManyToOne(() => Category, (category) => category.entries)
-    category: Category
+    @ManyToOne(() => Category, (category) => category.entries, { onDelete: 'CASCADE' })
+    category: Category;
 }

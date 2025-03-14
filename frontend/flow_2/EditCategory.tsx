@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { Input, InputField } from '@/components/ui/input';
 import { useDispatch } from 'react-redux';
 
 import { AppDispatch } from './slices/store';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { setCategories, updateCategory } from './slices/categorySlice';
+import { deleteCategory, setCategories, updateCategory } from './slices/categorySlice';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/flow_1/utils/types';
 import { fetchEntries } from './slices/entrySlice';
@@ -54,10 +54,38 @@ export default function EditCategoryScreen() {
   };
 
   const onDeleteCategory = async () => {
-      if (!categoryName.trim()) return;
+    if (!categoryName.trim()) return;
+    Alert.alert(
+      "Confirmation",
+      `Do you want to delete category: ${category.title}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            const response = await dispatch(deleteCategory(category.id));
 
-      console.log(category);
-      
+            // Check if the response is successful (you may have a success flag in your response payload)
+            if (response?.meta?.requestStatus === 'fulfilled') {
+              console.log('Category deleted successfully')
+
+              // Re-fetch the updated categories (triggering a new dispatch for fresh data)
+              dispatch(fetchEntries());
+              // Redirect on success
+              navigation.goBack(); // Or use any other navigation logic as needed
+            } else {
+              console.error('Failed to delete category');
+            }
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+    console.log(category);
+
   }
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
