@@ -101,6 +101,8 @@ export class CategoryService {
     // Edit (Update) Category function
     async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<ResponseDto> {
         try {
+            console.log("reached");
+            
             // Check if the category exists
             const category = await this.categoryRepository.findOne({ where: { id } });
             if (!category) {
@@ -121,15 +123,24 @@ export class CategoryService {
             };
 
         } catch (error) {
+            console.log(error);
+            
             if (error instanceof CategoryNotFoundException) {
-                throw error;
+                throw new HttpException(
+                    {
+                        success: false,
+                        message: `Category with ID ${id} not found`,  // Add specific error message
+                        error: error.message
+                    },
+                    HttpStatus.NOT_FOUND  // Return 404 for not found errors
+                );
             }
 
             throw new HttpException(
                 {
                     success: false,
                     message: 'Error updating category',
-                    error: error || 'Unknown error'
+                    error: error?.message || 'Unknown error'
                 },
                 HttpStatus.INTERNAL_SERVER_ERROR
             );

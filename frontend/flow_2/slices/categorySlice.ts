@@ -29,6 +29,28 @@ export const createCategory = createAsyncThunk(
   }
 );
 
+// Async thunk to update a category
+export const updateCategory = createAsyncThunk(
+  'category/updateCategory',
+  async ({ id, title }: { id: string; title: string }) => {
+    const response = await fetch(`http://localhost:3000/category/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update category');
+    }
+
+    const data = await response.json();
+    return data.data;
+  }
+);
+
+
 interface CategoryState {
   categories: CategoryEntity[];
   loading: boolean;
@@ -48,6 +70,13 @@ const categorySlice = createSlice({
     setCategories: (state, action: PayloadAction<CategoryEntity[]>) => {
       state.categories = action.payload;
     },
+    updateCategoryInList: (state, action: PayloadAction<CategoryEntity>) => {
+      const updatedCategory = action.payload;
+      const index = state.categories.findIndex(category => category.id === updatedCategory.id);
+      if (index !== -1) {
+        state.categories[index] = updatedCategory; // Replace the category with the updated one
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -72,10 +101,25 @@ const categorySlice = createSlice({
       .addCase(createCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to create category';
+      })
+      .addCase(updateCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateCategory.fulfilled, (state, action) => {
+        const index = state.categories.findIndex(cat => cat.id === action.payload.id);
+        if (index !== -1) {
+          state.categories[index] = action.payload;
+        }
+        state.loading = false;
+      })
+      .addCase(updateCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update category';
       });
+      ;
   },
 });
 
-export const { setCategories } = categorySlice.actions;
+export const { setCategories, updateCategoryInList} = categorySlice.actions;
 
 export default categorySlice.reducer;

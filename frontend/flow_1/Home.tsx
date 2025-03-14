@@ -7,6 +7,7 @@ import { Center } from '@gluestack-ui/config/build/theme';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/flow_2/slices/store';
 import { fetchEntries } from '@/flow_2/slices/entrySlice';
+import { CategoryEntity } from './CategoryEntity';
 
 export class EntryEntity {
   constructor(
@@ -18,18 +19,16 @@ export class EntryEntity {
   ) { }
 }
 
-//TODO CONVERT FOR REDUX
 export default function Entries() {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
+  const { width: screenWidth } = Dimensions.get("window");
 
   // Access entries from the Redux state
   const { entries, status, error } = useSelector((state: RootState) => state.entry);
   const [groupedEntries, setGroupedEntries] = useState<Record<string, EntryEntity[]>>({});
   const [selectedEntries, setSelectedEntries] = useState<Set<number>>(new Set()); // Track selected entries
-  const { width: screenWidth } = Dimensions.get("window");
 
-  //TODO Calling more than once, is it normal?
   useEffect(() => {
     // Dispatch fetchEntries to load data when the component mounts
     dispatch(fetchEntries());
@@ -74,8 +73,8 @@ export default function Entries() {
   };
 
   //TODO implement
-  const handleCategoryEdit = (categoryId: string) => {
-    navigation.navigate('EditCategory', { categoryId });
+  const handleCategoryEdit = (category: CategoryEntity) => {
+    navigation.navigate('EditCategory', { category });
   };
 
   //TODO implement
@@ -97,7 +96,7 @@ const handleEntryEdit = (entryId: string) => {
               <View key={categoryId} style={styles.categoryContainer}>
                 <View style={styles.categoryHeader}>
                   <Text style={styles.categoryTitle}>{category.title}</Text>
-                  <TouchableOpacity onPress={() => handleCategoryEdit(category.id.toString())}>
+                  <TouchableOpacity onPress={() => handleCategoryEdit(category)}>
                     <Text style={styles.dots}>•••</Text>
                   </TouchableOpacity>
                 </View>

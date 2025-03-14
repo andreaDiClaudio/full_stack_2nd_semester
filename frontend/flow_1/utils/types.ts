@@ -2,7 +2,7 @@ import { CategoryEntity } from "../CategoryEntity";
 
 export type RootStackParamList = {
   Home: undefined;
-  EditCategory: { categoryId: string };
+  EditCategory: { category: CategoryEntity };
   EditEntry: { entryId: string }; 
   Delete: { 
     entityId: number; 
