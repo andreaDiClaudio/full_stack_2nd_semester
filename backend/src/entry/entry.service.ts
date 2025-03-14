@@ -95,6 +95,10 @@ export class EntryService {
   async update(id: number, updateEntryDto: UpdateEntryDto): Promise<ResponseDto> {
     const entry = await this.entryRepository.findOne({ where: { id } });
 
+    console.log("reached");
+    
+    console.log(entry);
+    
     if (!entry) {
       throw new HttpException(
         {

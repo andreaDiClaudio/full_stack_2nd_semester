@@ -17,6 +17,7 @@ import { store } from './flow_2/slices/store';
 import EditCategoryScreen from './flow_2/EditCategory';
 import EditEntryScreen from './flow_2/EditEntry';
 
+
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -111,7 +112,7 @@ function RootStack() {
     >
       <Stack.Screen name="Home" component={MyTabs} />
       <Stack.Screen name="EditCategory" component={EditCategoryScreenWrapper} options={{ title: 'Edit Category' }} />
-      <Stack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Edit Entry' }} />
+      <Stack.Screen name="EditEntry" component={EditEntryScreenWrapper} options={{ title: 'Edit Entry' }} />
     </Stack.Navigator>
   );
 }

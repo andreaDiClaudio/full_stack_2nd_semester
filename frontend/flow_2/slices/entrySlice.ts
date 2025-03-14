@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import { EntryEntity } from '../entity/EntryEntity';
+import { CategoryEntity } from '@/flow_1/CategoryEntity';
 
 interface EntryState {
   entryTitle: string;
@@ -61,6 +62,37 @@ export const createEntry = createAsyncThunk(
     }
   }
 );
+// Define async thunk for updating an entry
+export const updateEntry = createAsyncThunk(
+  'entry/updateEntry',
+  async (
+    { id, title, amount, categoryId }: { id: number; title: string; amount: number; categoryId: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(`http://localhost:3000/entry/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          amount,
+          categoryId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update entry');
+      }
+
+      const data = await response.json();
+      return data; // Return the updated entry from the server
+    } catch (error) {
+      return rejectWithValue('Error updating entry');
+    }
+  }
+);
 
 
 const entrySlice = createSlice({
@@ -109,7 +141,25 @@ const entrySlice = createSlice({
       .addCase(fetchEntries.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
-      });
+      })
+
+         // Handling updateEntry async thunk
+         .addCase(updateEntry.pending, (state) => {
+          state.status = 'loading';
+        })
+        .addCase(updateEntry.fulfilled, (state, action: PayloadAction<EntryEntity>) => {
+          state.status = 'succeeded';
+          // Update the entry in the state
+          const updatedEntry = action.payload;
+          const index = state.entries.findIndex((entry) => entry.id === updatedEntry.id);
+          if (index !== -1) {
+            state.entries[index] = updatedEntry;
+          }
+        })
+        .addCase(updateEntry.rejected, (state, action) => {
+          state.status = 'failed';
+          state.error = action.payload as string;
+        });
   },
 });
 
