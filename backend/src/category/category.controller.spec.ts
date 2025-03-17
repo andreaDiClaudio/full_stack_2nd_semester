@@ -219,7 +219,7 @@ describe('CategoryController', () => {
         .expect(HttpStatus.OK);
 
       expect(response.body.success).toBe(true);
-      expect(response.body.message).toContain(`Category with ID ${id} deleted successfully`);
+      expect(response.body.message).toContain(`Category with ID ${id} and all related entries deleted successfully`);
     });
 
   });
