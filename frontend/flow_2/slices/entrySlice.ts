@@ -23,18 +23,18 @@ const initialState: EntryState = {
 };
 
 export const fetchEntries = createAsyncThunk('entries/fetchEntries', async () => {
-    try {
-      const response = await fetch('http://localhost:3000/entry');
-      if (!response.ok) {
-        throw new Error('Failed to fetch entries');
-      }
-      const data = await response.json();
-      
-      return data.data; // Return the fetched entries
-    } catch (error) {
-      return ('Error fetching entries');
+  try {
+    const response = await fetch('http://localhost:3000/entry');
+    if (!response.ok) {
+      throw new Error('Failed to fetch entries');
     }
+    const data = await response.json();
+
+    return data.data; // Return the fetched entries
+  } catch (error) {
+    return ('Error fetching entries');
   }
+}
 );
 
 // Define async thunk for creating an entry
@@ -71,7 +71,7 @@ export const updateEntry = createAsyncThunk(
   ) => {
     try {
       console.log(categoryId);
-      
+
       const response = await fetch(`http://localhost:3000/entry/${id}`, {
         method: 'PUT',
         headers: {
@@ -93,6 +93,24 @@ export const updateEntry = createAsyncThunk(
     } catch (error) {
       return rejectWithValue('Error updating entry');
     }
+  }
+);
+
+// Async thunk to delete a category
+export const deleteEntry = createAsyncThunk(
+  'entry/deleteEntry',
+  async (entryId: number) => {
+    const response = await fetch(`http://localhost:3000/entry/${entryId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      console.log(response);
+
+      throw new Error('Failed to delete category');
+    }
+
+    return entryId; // Return the ID of the deleted entry
   }
 );
 
@@ -145,23 +163,31 @@ const entrySlice = createSlice({
         state.error = action.payload as string;
       })
 
-         // Handling updateEntry async thunk
-         .addCase(updateEntry.pending, (state) => {
-          state.status = 'loading';
-        })
-        .addCase(updateEntry.fulfilled, (state, action: PayloadAction<EntryEntity>) => {
-          state.status = 'succeeded';
-          // Update the entry in the state
-          const updatedEntry = action.payload;
-          const index = state.entries.findIndex((entry) => entry.id === updatedEntry.id);
-          if (index !== -1) {
-            state.entries[index] = updatedEntry;
-          }
-        })
-        .addCase(updateEntry.rejected, (state, action) => {
-          state.status = 'failed';
-          state.error = action.payload as string;
-        });
+      // Handling updateEntry async thunk
+      .addCase(updateEntry.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateEntry.fulfilled, (state, action: PayloadAction<EntryEntity>) => {
+        state.status = 'succeeded';
+        // Update the entry in the state
+        const updatedEntry = action.payload;
+        const index = state.entries.findIndex((entry) => entry.id === updatedEntry.id);
+        if (index !== -1) {
+          state.entries[index] = updatedEntry;
+        }
+      })
+      .addCase(updateEntry.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
+      .addCase(deleteEntry.fulfilled, (state, action) => {
+        state.entries = state.entries.filter((entry) => entry.id !== action.payload); // Remove the deleted category by its ID
+      })
+      .addCase(deleteEntry.rejected, (state, action) => {
+        state.error = action.error.message || 'Failed to delete entry';
+      });
+
+
   },
 });
 

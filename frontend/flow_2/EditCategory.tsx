@@ -85,8 +85,8 @@ export default function EditCategoryScreen() {
       { cancelable: false }
     );
     console.log(category);
-
   }
+  
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
       <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Edit Category</Text>

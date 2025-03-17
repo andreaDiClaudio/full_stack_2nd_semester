@@ -7,7 +7,7 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import { AppDispatch, RootState } from './slices/store';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/flow_1/utils/types';
-import { fetchEntries } from './slices/entrySlice';
+import { deleteEntry, fetchEntries } from './slices/entrySlice';
 import { resetEntryForm, setEntryAmount, setEntryTitle, setSelectedCategory, updateEntry } from './slices/entrySlice';
 import { CategoryEntity } from '@/flow_1/CategoryEntity';
 import { Select, SelectBackdrop, SelectContent, SelectInput, SelectItem, SelectPortal, SelectTrigger } from '@/components/ui/select';
@@ -85,6 +85,40 @@ const EditEntryScreen = () => {
         }
     };
 
+    const onDeleteEntry = async () => {
+        if (!entryTitle.trim()) return;
+        Alert.alert(
+            "Confirmation",
+            `Do you want to delete category: ${entry.title}?`,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "OK",
+                    onPress: async () => {
+                        const response = await dispatch(deleteEntry(entry.id));
+
+                        // Check if the response is successful (you may have a success flag in your response payload)
+                        if (response?.meta?.requestStatus === 'fulfilled') {
+                            console.log('Category deleted successfully')
+
+                            // Re-fetch the updated categories (triggering a new dispatch for fresh data)
+                            dispatch(fetchEntries());
+                            // Redirect on success
+                            navigation.goBack(); // Or use any other navigation logic as needed
+                        } else {
+                            console.error('Failed to delete category');
+                        }
+                    }
+                }
+            ],
+            { cancelable: false }
+        );
+
+    }
+
     return (
         <View style={[styles.container, { width: screenWidth * 0.5 }]}>
             <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Edit Entry</Text>
@@ -131,6 +165,15 @@ const EditEntryScreen = () => {
 
             <Button size="xl" variant="solid" action="primary" onPress={onUpdateEntry}>
                 <ButtonText>Update</ButtonText>
+            </Button>
+
+            <Button
+                size="xl"
+                variant="solid"
+                onPress={onDeleteEntry}
+                accessibilityLabel="Delete entry button"
+            >
+                <ButtonText style={{ color: 'red' }}>Delete</ButtonText>
             </Button>
 
             {/* Loading/Error Feedback */}
