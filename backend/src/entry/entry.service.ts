@@ -93,12 +93,8 @@ export class EntryService {
   }
 
   async update(id: number, updateEntryDto: UpdateEntryDto): Promise<ResponseDto> {
-    const entry = await this.entryRepository.findOne({ where: { id } });
+    const entry = await this.entryRepository.findOne({ where: { id }, relations: ['category'] });
 
-    console.log("reached");
-    
-    console.log(entry);
-    
     if (!entry) {
       throw new HttpException(
         {
@@ -111,10 +107,28 @@ export class EntryService {
       );
     }
 
-    const updatedEntry = await this.entryRepository.save({
-      ...entry,
-      ...updateEntryDto
-    });
+    // If categoryId is provided, fetch the corresponding Category entity
+    if (updateEntryDto.categoryId) {
+        const category = await this.categoryRepository.findOne({ where: { id: updateEntryDto.categoryId } });
+
+        if (!category) {
+          throw new HttpException(
+            {
+              success: false,
+              statusCode: HttpStatus.NOT_FOUND,
+              message: `Category with ID ${updateEntryDto.categoryId} not found`,
+              error: 'Not Found',
+            },
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        entry.category = category; // Assign the category entity
+    }
+
+    Object.assign(entry, updateEntryDto);
+
+    const updatedEntry = await this.entryRepository.save(entry);
 
     return {
       success: true,
@@ -122,7 +136,8 @@ export class EntryService {
       message: `Entry with ID ${id} updated successfully`,
       data: updatedEntry
     };
-  }
+}
+
 
   async delete(id: number): Promise<ResponseDto> {
     const entry = await this.entryRepository.findOne({ where: { id } });

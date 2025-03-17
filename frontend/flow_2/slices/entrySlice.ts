@@ -70,6 +70,8 @@ export const updateEntry = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      console.log(categoryId);
+      
       const response = await fetch(`http://localhost:3000/entry/${id}`, {
         method: 'PUT',
         headers: {
