@@ -21,7 +21,7 @@ export class UsersService {
 
     async findOne(username: string): Promise<UserEntity> {
         const result = await this.userRepository.findOne({where: {username: username}});
-        // console.log("findOne user service", result);
+        console.log("findOne user service", result);
         
         return result;
     }

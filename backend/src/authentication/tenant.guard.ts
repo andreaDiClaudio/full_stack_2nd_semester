@@ -16,6 +16,8 @@ export class TenantGuard implements CanActivate {
 
     // This returns true if there is a user and
     // the user is an admin
+    console.log(user, user.role);
+      
     return user && user.role === Role.User
   }
 }
