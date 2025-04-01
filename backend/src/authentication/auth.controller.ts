@@ -27,7 +27,7 @@ import { LocalAuthGuard } from './local-auth.gurd';
     
     @Post('auth/signup')
     async signup(@Request2() req) {
-      // console.log("body", req.body);
+      console.log("body", req.body);
       
       return this.authService.signup(req.body);
     }
