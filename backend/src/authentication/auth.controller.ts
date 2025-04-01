@@ -16,11 +16,17 @@ import { LocalAuthGuard } from './local-auth.gurd';
 export class AuthController {
 constructor(private authService: AuthService) {}
 
+//TODO
+// - Understand why the guard is not allowin upgrading user
+// - continue role based auth slides to make sure endpoints are accessible only for premium users
+// - Create an e2e test that tests the endpoint to upgrade a user to a premium user
+// - Continue to the frontend logic with login and signup
 @UseGuards(JwtAuthGuard)
 @Post('upgrade')
 async upgrade(@Request2() req) {
+  console.log("Decoded user from JWT:", req.user); // Debugging step
   try {
-    const result = await this.authService.upgrade(req.user.id);
+    const result = await this.authService.upgrade(req.user.username);
     return { message: 'User upgraded successfully', result };
   } catch (error) {
     throw new InternalServerErrorException('Failed to upgrade user');

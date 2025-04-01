@@ -9,12 +9,14 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async upgrade(userId: number) {
-    const user = await this.usersService.findUserById(userId);
-    if (!user) {
+  async upgrade(username: string) {
+    const userFound = await this.usersService.findOne(username);
+    if (!userFound) {
       throw new NotFoundException('User not found');
     }
-    return this.usersService.upgrade(userId);
+    console.log("userFound", userFound);
+    
+    return this.usersService.upgrade(userFound.id);
   }
 
   async signup(username: string, password: string) {

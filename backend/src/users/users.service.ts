@@ -1,47 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './../authentication/entities/user';
 import { Repository } from 'typeorm';
+import { UserEntity } from './../authentication/entities/user';
 import { Role } from './role';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>) {}
 
-    async upgrade(userId: number) {
-      const user = await this.findUserById(userId); // Finding the user by the userId
-      user.role = Role.PremiumUser; // Changing the role in memory. 
-      
-      return this.userRepository.save(user); // Saving the updated user obj. into database
+  async upgrade(userId: number): Promise<UserEntity> {
+    const user = await this.findUserById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
     }
 
-    async findUserById(id: number) : Promise<UserEntity> {
-        return await this.userRepository.findOne({where: {id: id}});
+    console.log("upgading user role...");
+    
+    user.role = Role.PremiumUser;
+    try {
+      return await this.userRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to upgrade user role.');
     }
+  }
 
-    async findOne(username: string): Promise<UserEntity> {
-        const result = await this.userRepository.findOne({where: {username: username}});
-        console.log("findOne user service", result);
-        
-        return result;
+  async findUserById(id: number): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found.`);
     }
+    return user;
+  }
 
-    async create(username: string, password: string) {
-        return this.userRepository.save({username, password}) // Never save passwords in clear text!
+  async findOne(username: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new NotFoundException(`User with username '${username}' not found.`);
     }
+    return user;
+  }
 
-        // An example to retrieve data with related data. Can be used for 
-        // finding one tenant or one board member.
-        // const result = await this.tenantRepository.findOne({ where: 
-        //     {
-        //         id: savedTenant.id
-        //     }, relations: {
-        //         user: true
-        //     }
-        // }    
-        // );
-        // console.log("result", result);
-        // return result;
-        // await this.userRepository.save({username, password}); // Never save passwords in clear text!
-        
+  async create(username: string, password: string): Promise<UserEntity> {
+    try {
+      const existingUser = await this.userRepository.findOne({ where: { username } });
+      if (existingUser) {
+        throw new ConflictException('Username is already taken.');
+      }
+
+      const newUser = this.userRepository.create({ username, password });
+      return await this.userRepository.save(newUser);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create user.');
+    }
+  }
 }
