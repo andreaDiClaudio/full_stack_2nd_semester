@@ -9,11 +9,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   handleRequest(err, user, info) {
+    console.log("Checking jwt...");
+    
     if (err || !user) {
-      console.log("JWT error or user not found:", err, info); // Log if there's an error
+      console.log("JWT error or user not found:", err); // Log if there's an error
       throw err || new UnauthorizedException('Unauthorized access');
+    } else {
+      return user;
     }
-    console.log("Decoded user from JWT in JwtAuthGuard:", user); // Log the decoded user from JWT
-    return user; // Return the decoded user
   }
 }

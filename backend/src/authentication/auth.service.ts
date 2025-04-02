@@ -1,29 +1,35 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>
   ) {}
 
-  async upgrade(username: string) {
-    console.log("Reached");
+  async upgrade(username: string) {    
+    console.log("username:........",username);
     
     const userFound = await this.usersService.findOne(username);
+    console.log(userFound);
+    
     if (!userFound) {
       throw new NotFoundException('User not found');
     }
-    console.log("userFound", userFound);
-    
     return this.usersService.upgrade(userFound.id);
   }
 
   async signup(username: string, password: string) {
-    const existingUser = await this.usersService.findOne(username);
-    if (existingUser) {
+    console.log("Signing up..");
+    const user = await this.userRepository.findOne({ where: { username } });
+    if (user) {
+      console.log("Username already exists");
       throw new BadRequestException('Username already exists');
     }
     return this.usersService.create(username, password);

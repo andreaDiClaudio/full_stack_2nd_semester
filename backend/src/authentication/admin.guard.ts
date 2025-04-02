@@ -13,9 +13,6 @@ export class AdminGuard implements CanActivate {
     const userId: number = request.user.id
 
     const user = await this.usersService.findUserById(userId);
-
-    console.log("user in admin guard", user);
-
     // This returns true if there is a user and the user is an admin
     return user && user.role === Role.Admin
   }

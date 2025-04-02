@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { jwtConstants } from './constants';
 import * as dotenv from 'dotenv';
 import { PassportStrategy } from '@nestjs/passport';
+import { UsersService } from 'src/users/users.service';
+import { Role } from 'src/users/role';
 
 dotenv.config();
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private usersService: UsersService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -17,7 +19,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    console.log("🔹 Token payload received in JwtStrategy:", payload); // Log the token payload
-    return { id: payload.id, username: payload.username }; // Map the payload to the user object
+    // Retrieve user data from the database to attach the role (assuming it is not already in the payload)
+    const user = await this.usersService.findUserById(payload.id);
+  
+    // Add role to the payload if not already present
+    return {
+      id: payload.id,
+      username: payload.username,
+      role: user?.role || Role.User,  // Default to Role.User if role is not found
+    };
   }
 }

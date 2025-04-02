@@ -11,50 +11,67 @@ import {
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
+import { PremiumUserGuard } from './premium-user.guard';
 
 @Controller('auth')
 export class AuthController {
-constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
-//TODO
-// - Understand why the guard is not allowin upgrading user
-// - continue role based auth slides to make sure endpoints are accessible only for premium users
-// - Create an e2e test that tests the endpoint to upgrade a user to a premium user
-// - Continue to the frontend logic with login and signup
-@UseGuards(JwtAuthGuard)
-@Post('upgrade')
-async upgrade(@Request2() req) {
-  console.log("Decoded user from JWT:", req.user); 
-  try {
-    const result = await this.authService.upgrade(req.user.username);
-    return { message: 'User upgraded successfully', result };
-  } catch (error) {
-    throw new InternalServerErrorException('Failed to upgrade user');
+  //TODO
+  // - continue role based auth slides to make sure endpoints are accessible only for premium users
+  // - Create an e2e test that tests the endpoint to upgrade a user to a premium user
+  // - Continue to the frontend logic with login and signup
+  @UseGuards(JwtAuthGuard)
+  @Post('upgrade')
+  async upgrade(@Request2() req) {
+    try {
+      console.log(req.user);
+      
+      const result = await this.authService.upgrade(req.user.username);
+      return { message: 'User upgraded successfully', result };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to upgrade user');
+    }
   }
-}
 
-@UseGuards(LocalAuthGuard)
-@Post('login')
-async login(@Request2() req) {
-  try {
-    const token = await this.authService.login(req.user, req.body.password);
-    return { message: 'Login successful', ...token };
-  } catch (error) {
-    throw new UnauthorizedException('Invalid credentials');
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Request2() req) {
+    try {
+      const token = await this.authService.login(req.user, req.body.password);
+      return { message: 'Login successful', ...token };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
-}
 
-@Post('signup')
-async signup(@Body() body) {
-  const { username, password } = body;
-  if (!username || !password) {
-    throw new BadRequestException('Username and password are required');
+  @Post('signup')
+  async signup(@Body() body) {
+    console.log("Accessed signup endpoint");
+    const { username, password } = body;
+    if (!username || !password) {
+      throw new BadRequestException('Username and password are required');
+    }
+    try {
+      const user = await this.authService.signup(username, password);
+      console.log("User registered successfully!");
+      return { message: 'User registered successfully', user };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to register user');
+    }
   }
-  try {
-    const user = await this.authService.signup(username, password);
-    return { message: 'User registered successfully', user };
-  } catch (error) {
-    throw new InternalServerErrorException('Failed to register user');
+
+  @UseGuards(JwtAuthGuard, PremiumUserGuard)
+  @Post('test')
+  async test(@Request2() req) {
+    console.log("Accessed test endpoint");
+    try {
+      console.log("User is premium");
+      return { message: 'User is premium' };
+    } catch (error) {
+      console.log("User is NOT premium");
+      throw new InternalServerErrorException('Is is not PREMIUM');
+    }
   }
-}
+
 }

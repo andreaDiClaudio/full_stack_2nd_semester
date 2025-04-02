@@ -9,6 +9,8 @@ export class UsersService {
   constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>) {}
 
   async upgrade(userId: number): Promise<UserEntity> {
+    console.log(userId);
+    
     const user = await this.findUserById(userId);
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
