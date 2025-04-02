@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { LocalAuthGuard } from './local-auth.gurd';
+import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +24,7 @@ constructor(private authService: AuthService) {}
 @UseGuards(JwtAuthGuard)
 @Post('upgrade')
 async upgrade(@Request2() req) {
-  console.log("Decoded user from JWT:", req.user); // Debugging step
+  console.log("Decoded user from JWT:", req.user); 
   try {
     const result = await this.authService.upgrade(req.user.username);
     return { message: 'User upgraded successfully', result };

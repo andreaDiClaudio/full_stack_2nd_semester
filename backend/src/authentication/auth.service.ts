@@ -10,6 +10,8 @@ export class AuthService {
   ) {}
 
   async upgrade(username: string) {
+    console.log("Reached");
+    
     const userFound = await this.usersService.findOne(username);
     if (!userFound) {
       throw new NotFoundException('User not found');
@@ -28,8 +30,6 @@ export class AuthService {
   }
 
   async login(user: any, password: string) {
-    console.log("inside login", user, "password:", password);
-  
     const userFromDb = await this.usersService.findOne(user.username);
     if (!userFromDb || userFromDb.password !== password) {
       throw new UnauthorizedException('Invalid username or password');
