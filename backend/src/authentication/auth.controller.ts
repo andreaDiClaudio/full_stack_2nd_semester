@@ -61,17 +61,4 @@ export class AuthController {
     }
   }
 
-  @UseGuards(JwtAuthGuard, PremiumUserGuard)
-  @Post('test')
-  async test(@Request2() req) {
-    console.log("Accessed test endpoint");
-    try {
-      console.log("User is premium");
-      return { message: 'User is premium' };
-    } catch (error) {
-      console.log("User is NOT premium");
-      throw new InternalServerErrorException('Is is not PREMIUM');
-    }
-  }
-
 }
