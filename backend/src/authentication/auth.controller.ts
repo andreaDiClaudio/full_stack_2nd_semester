@@ -17,9 +17,6 @@ import { PremiumUserGuard } from './premium-user.guard';
 export class AuthController {
   constructor(private authService: AuthService) { }
 
-  //TODO
-  // - Continue to the frontend logic with login and signup
-  
   @UseGuards(JwtAuthGuard)
   @Post('upgrade')
   async upgrade(@Request2() req) {
@@ -33,7 +30,6 @@ export class AuthController {
     }
   }
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request2() req) {
     try {

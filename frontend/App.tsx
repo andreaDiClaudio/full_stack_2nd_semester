@@ -9,18 +9,32 @@ import { RootStackParamList } from './flow_1/utils/types';
 // Screens
 import Category from './flow_1/Home';
 import CreateCategoryScreen from './flow_2/CreateCategory';
-import DeleteCategoryScreen from './flow_2/DeleteCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
 ;
-import { Provider } from 'react-redux';
-import { store } from './flow_2/slices/store';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { RootState, store } from './flow_2/slices/store';
 import EditCategoryScreen from './flow_2/EditCategory';
 import EditEntryScreen from './flow_2/EditEntry';
+import { LoginScreen } from './flow_3/users/LoginScreen';
+import { useEffect, useState } from 'react';
+import * as SecureStore from 'expo-secure-store';
+import { reloadJwtFromStorage } from './flow_3/users/usersSlice';
 
 
+//TODO implement login functionality anb link to  redirection to signup and then inplemetn signup
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
+const AuthStack = createStackNavigator();
+
+function AuthScreens() {
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen name="Login" component={LoginScreen} />
+      {/* <AuthStack.Screen name="Signup" component={SignupScreen} /> */}
+    </AuthStack.Navigator>
+  );
+}
 
 function HomeScreen() {
   return (
@@ -116,13 +130,35 @@ function RootStack() {
     </Stack.Navigator>
   );
 }
+function MainApp() {
+  const dispatch = useDispatch();
+  const token = useSelector((state: RootState) => state.user.token);
+  const [loading, setLoading] = useState(true); // NEW
+
+  useEffect(() => {
+    async function getToken() {
+      const storedToken = await SecureStore.getItemAsync('jwt');
+      if (storedToken) {
+        dispatch(reloadJwtFromStorage(storedToken)); // FIXED
+      }
+      setLoading(false); // ✅ finish loading after checking token
+    }
+    getToken();
+  }, [dispatch]);
+
+  if (loading) return null; // Or a splash screen
+
+  return (
+    <NavigationContainer>
+      {token ? <RootStack /> : <AuthScreens />}
+    </NavigationContainer>
+  );
+}
 
 export default function App() {
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <RootStack />
-      </NavigationContainer>
+      <MainApp />
     </Provider>
   );
 }
