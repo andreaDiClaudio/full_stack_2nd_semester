@@ -18,9 +18,8 @@ export class AuthController {
   constructor(private authService: AuthService) { }
 
   //TODO
-  // - continue role based auth slides to make sure endpoints are accessible only for premium users
-  // - Create an e2e test that tests the endpoint to upgrade a user to a premium user
   // - Continue to the frontend logic with login and signup
+  
   @UseGuards(JwtAuthGuard)
   @Post('upgrade')
   async upgrade(@Request2() req) {
