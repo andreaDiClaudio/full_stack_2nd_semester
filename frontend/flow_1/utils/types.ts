@@ -4,5 +4,7 @@ import { CategoryEntity } from "../CategoryEntity";
 export type RootStackParamList = {
   Home: undefined;
   EditCategory: { category: CategoryEntity };
-  EditEntry: { entry: EntryEntity }; 
+  EditEntry: { entry: EntryEntity };
+  Login: undefined;
+  SignupScreen: undefined
 };

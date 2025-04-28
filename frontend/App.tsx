@@ -10,7 +10,6 @@ import { RootStackParamList } from './flow_1/utils/types';
 import Category from './flow_1/Home';
 import CreateCategoryScreen from './flow_2/CreateCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
-;
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState, store } from './flow_2/slices/store';
 import EditCategoryScreen from './flow_2/EditCategory';
@@ -19,10 +18,8 @@ import { LoginScreen } from './flow_3/users/LoginScreen';
 import { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { logout, reloadJwtFromStorage } from './flow_3/users/usersSlice';
+import { SignupScreen } from './flow_3/users/SignupScreen';
 
-
-
-//TODO implement link to  redirection to signup and then inplemetn signup
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -41,11 +38,24 @@ function AuthScreenWrapper() {
   );
 }
 
+function SignupScreenWrapper() {
+  return (
+    <View style={styles.screenContainer}>
+      <GluestackUIProvider mode="light">
+        <View style={styles.contentContainer}>
+          <SignupScreen />
+          <StatusBar style="auto" />
+        </View>
+      </GluestackUIProvider>
+    </View>
+  );
+}
+
 function AuthScreens() {
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen name="Login" component={AuthScreenWrapper} />
-      {/* <AuthStack.Screen name="Signup" component={SignupScreen} /> */}
+      <AuthStack.Screen name="SignupScreen" component={SignupScreenWrapper} />
     </AuthStack.Navigator>
   );
 }
@@ -156,6 +166,7 @@ function RootStack({ dispatch }: { dispatch: any }) {
     </Stack.Navigator>
   );
 }
+
 function MainApp() {
   const dispatch = useDispatch();
   const token = useSelector((state: RootState) => state.user.token);
