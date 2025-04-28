@@ -33,7 +33,7 @@ export class AuthController {
   @Post('login')
   async login(@Request2() req) {
     try {
-      const token = await this.authService.login(req.user, req.body.password);
+      const token = await this.authService.login(req.body.username, req.body.password);
       return { message: 'Login successful', ...token };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');

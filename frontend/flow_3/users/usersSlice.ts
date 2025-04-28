@@ -5,7 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 
 
 export const signup = createAsyncThunk(
-    'auth/signup', // not the endpoint
+    'auth/signup', 
     async (createUserDto: CreateUserDto, thunkAPI) => {
         // the returned value will be the content of action.payload
 
@@ -13,14 +13,26 @@ export const signup = createAsyncThunk(
     },
   )
 
-  export const login = createAsyncThunk(
-    'auth/login', // not the endpoint
-    async (createUserDto: CreateUserDto, thunkAPI) => {
-        // the returned value will be the content of action.payload
+export const login = createAsyncThunk(
+  'auth/login',
+  async (createUserDto: CreateUserDto, thunkAPI) => {
+    try {
+      const response = await fetch(`http://localhost:3000/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createUserDto),
+      });
 
-      return await UsersAPI.login(createUserDto)
-    },
-  )
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 
 interface UserState {
@@ -43,9 +55,8 @@ const userSlice = createSlice({
     },
     logout: (state) => {
       state.token = '';
-      SecureStore.setItemAsync('jwt', '');
+      SecureStore.deleteItemAsync('jwt');
     }
-    // standard reducer logic, with auto-generated action types per reducer
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -62,20 +73,18 @@ const userSlice = createSlice({
     })
 
     builder.addCase(login.fulfilled, (state, action) => {
-        console.log('login payload', action.payload);
-      
-        const token = action.payload.access_token; // ✅ extract the token
+
+        const token = action.payload.access_token;
       
         if (token) {
-          SecureStore.setItemAsync('jwt', token); // ✅ save raw token
-          state.token = token; // ✅ update Redux state
+          SecureStore.setItemAsync('jwt', token);
+          state.token = token; 
           state.errormessage = '';
         } else {
           state.errormessage = 'Invalid login response';
         }
       });
     builder.addCase(login.rejected, (state, action) => {
-        // Add user to the state array
         console.log("payload", action.payload);
         
         state.errormessage = "Error logging in";

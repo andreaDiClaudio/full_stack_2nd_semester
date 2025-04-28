@@ -35,13 +35,13 @@ export class AuthService {
     return this.usersService.create(username, password);
   }
 
-  async login(user: any, password: string) {
-    const userFromDb = await this.usersService.findOne(user.username);
+  async login(username: string, password: string) {
+    const userFromDb = await this.usersService.findOne(username);
     if (!userFromDb || userFromDb.password !== password) {
       throw new UnauthorizedException('Invalid username or password');
     }
   
-    const payload = { username: user.username, id: userFromDb.id };
+    const payload = { username: userFromDb.username, id: userFromDb.id };
     return { access_token: this.jwtService.sign(payload) };
   }
 

@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import "@/global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
-import { StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -12,25 +12,39 @@ import CreateCategoryScreen from './flow_2/CreateCategory';
 import CreateEntryScreen from './flow_2/CreateEntry';
 ;
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { RootState, store } from './flow_2/slices/store';
+import { AppDispatch, RootState, store } from './flow_2/slices/store';
 import EditCategoryScreen from './flow_2/EditCategory';
 import EditEntryScreen from './flow_2/EditEntry';
 import { LoginScreen } from './flow_3/users/LoginScreen';
 import { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { reloadJwtFromStorage } from './flow_3/users/usersSlice';
+import { logout, reloadJwtFromStorage } from './flow_3/users/usersSlice';
 
 
-//TODO implement login functionality anb link to  redirection to signup and then inplemetn signup
+
+//TODO implement link to  redirection to signup and then inplemetn signup
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 
+function AuthScreenWrapper() {
+  return (
+    <View style={styles.screenContainer}>
+      <GluestackUIProvider mode="light">
+        <View style={styles.contentContainer}>
+          <LoginScreen />
+          <StatusBar style="auto" />
+        </View>
+      </GluestackUIProvider>
+    </View>
+  );
+}
+
 function AuthScreens() {
   return (
     <AuthStack.Navigator>
-      <AuthStack.Screen name="Login" component={LoginScreen} />
+      <AuthStack.Screen name="Login" component={AuthScreenWrapper} />
       {/* <AuthStack.Screen name="Signup" component={SignupScreen} /> */}
     </AuthStack.Navigator>
   );
@@ -115,7 +129,7 @@ function MyTabs() {
   );
 }
 
-function RootStack() {
+function RootStack({ dispatch }: { dispatch: any }) {
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -124,7 +138,19 @@ function RootStack() {
         headerTintColor: "white"
       }}
     >
-      <Stack.Screen name="Home" component={MyTabs} />
+      <Stack.Screen name="Home" component={MyTabs} options={({ navigation }) => ({
+          title: 'Home', // nice clean title
+          headerRight: () => (
+            <Button
+              title="Logout"
+              onPress={() => {
+                dispatch(logout()); 
+              }}
+              color="#fff" // white text on tomato background
+            />
+          )
+        })}
+      />
       <Stack.Screen name="EditCategory" component={EditCategoryScreenWrapper} options={{ title: 'Edit Category' }} />
       <Stack.Screen name="EditEntry" component={EditEntryScreenWrapper} options={{ title: 'Edit Entry' }} />
     </Stack.Navigator>
@@ -141,7 +167,7 @@ function MainApp() {
       if (storedToken) {
         dispatch(reloadJwtFromStorage(storedToken)); // FIXED
       }
-      setLoading(false); // ✅ finish loading after checking token
+      setLoading(false);
     }
     getToken();
   }, [dispatch]);
@@ -150,7 +176,7 @@ function MainApp() {
 
   return (
     <NavigationContainer>
-      {token ? <RootStack /> : <AuthScreens />}
+      {token ? <RootStack dispatch={dispatch}/> : <AuthScreens />}
     </NavigationContainer>
   );
 }
