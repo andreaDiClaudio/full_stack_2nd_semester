@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
 import { CreateUserDto } from './CreatedUsersDto';
 import { login } from './usersSlice';
+import { AppDispatch, RootState } from '@/flow_2/slices/store';
 
 interface LoginScreenProps {}
 
