@@ -1,23 +1,15 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CreateUserDto } from './CreatedUsersDto'
-import { UsersAPI } from './usersApi'
+// In your usersSlice.ts or wherever your slice is defined
+
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CreateUserDto } from './CreatedUsersDto';
+import { UsersAPI } from './usersApi';
 import * as SecureStore from 'expo-secure-store';
-
-
-export const signup = createAsyncThunk(
-    'auth/signup', 
-    async (createUserDto: CreateUserDto, thunkAPI) => {
-        // the returned value will be the content of action.payload
-
-      return await UsersAPI.signup(createUserDto)
-    },
-  )
 
 export const login = createAsyncThunk(
   'auth/login',
   async (createUserDto: CreateUserDto, thunkAPI) => {
     try {
-      const response = await fetch(`http://localhost:3000/auth/login`, {
+      const response = await fetch(`http://192.168.0.87:3000/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,33 +17,34 @@ export const login = createAsyncThunk(
         body: JSON.stringify(createUserDto),
       });
 
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
       const data = await response.json();
       return data;
     } catch (error) {
       console.error('Login error:', error);
-      return thunkAPI.rejectWithValue(error);
+      if (error instanceof Error) {
+        return thunkAPI.rejectWithValue(error.message); // Pass the error message to rejectWithValue
+      }
+
+      // Fallback if the error is not an instance of Error
+      return thunkAPI.rejectWithValue('Unknown error');
     }
   }
+
 );
 
-
-interface UserState {
-  token: string,
-  errormessage: string
-}
-
-const initialState: UserState = {
-  token: '',
-  errormessage: ''
-} 
-
-// Then, handle actions in your reducers:
 const userSlice = createSlice({
   name: 'users',
-  initialState,
+  initialState: {
+    token: '',
+    errormessage: ''
+  },
   reducers: {
     reloadJwtFromStorage: (state, action: PayloadAction<string>) => {
-      state.token = action.payload
+      state.token = action.payload;
     },
     logout: (state) => {
       state.token = '';
@@ -59,40 +52,24 @@ const userSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    // Add reducers for additional action types here, and handle loading state as needed
-    builder.addCase(signup.fulfilled, (state, action) => {
-      // Add user to the state array
-      console.log("payload", action.payload);
-      state.errormessage = "";
-    }),
-    builder.addCase(signup.rejected, (state, action) => {
-        // Add user to the state array
-        console.log("payload", action.payload);
-        
-        state.errormessage = "Error signing up";
-    })
-
     builder.addCase(login.fulfilled, (state, action) => {
+      const token = action.payload.access_token;
+      if (token) {
+        SecureStore.setItemAsync('jwt', token);
+        state.token = token;
+        state.errormessage = ''; // Clear any previous error
+      } else {
+        state.errormessage = 'Invalid login response';
+      }
+    });
 
-        const token = action.payload.access_token;
-      
-        if (token) {
-          SecureStore.setItemAsync('jwt', token);
-          state.token = token; 
-          state.errormessage = '';
-        } else {
-          state.errormessage = 'Invalid login response';
-        }
-      });
     builder.addCase(login.rejected, (state, action) => {
-        console.log("payload", action.payload);
-        
-        state.errormessage = "Error logging in";
-    })
+      // Ensure action.payload is a string before assigning to state.errormessage
+      state.errormessage = typeof action.payload === 'string' ? action.payload : 'Error logging in';
+    });
   },
-})
+});
 
-// Action creators are generated for each case reducer function
-export const { reloadJwtFromStorage, logout } = userSlice.actions
+export const { reloadJwtFromStorage, logout } = userSlice.actions;
 
-export default userSlice.reducer
+export default userSlice.reducer;

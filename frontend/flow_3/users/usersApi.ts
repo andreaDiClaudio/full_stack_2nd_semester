@@ -1,7 +1,7 @@
 import { CreateUserDto } from "./CreatedUsersDto";
 
 export class UsersAPI {
-    static baseUrl = 'http://127.0.0.1:3000/auth/'
+    static baseUrl = 'http://192.168.0.87:3000/auth/'
 
     static async login(userDto: CreateUserDto) {
     //   console.log("calling " + UsersAPI.baseUrl);

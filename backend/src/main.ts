@@ -10,6 +10,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throw an error if non-whitelisted properties are provided
       transform: true, // Automatically transform payloads to DTO instances
     }));
-  await app.listen(process.env.PORT ?? 3000);
+    app.listen(3000, '0.0.0.0', () => {
+      console.log('Server running on http://192.168.0.87:3000');
+    });
 }
 bootstrap();

@@ -24,7 +24,7 @@ const initialState: EntryState = {
 
 export const fetchEntries = createAsyncThunk('entries/fetchEntries', async () => {
   try {
-    const response = await fetch('http://localhost:3000/entry');
+    const response = await fetch('http://192.168.0.87:3000/entry');
     if (!response.ok) {
       throw new Error('Failed to fetch entries');
     }
@@ -42,7 +42,7 @@ export const createEntry = createAsyncThunk(
   'entry/createEntry',
   async (entryData: { title: string; amount: number; categoryId: string }, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:3000/entry', {
+      const response = await fetch('http://192.168.0.87:3000/entry', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const updateEntry = createAsyncThunk(
     try {
       console.log(categoryId);
 
-      const response = await fetch(`http://localhost:3000/entry/${id}`, {
+      const response = await fetch(`http://192.168.0.87:3000/entry/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export const updateEntry = createAsyncThunk(
 export const deleteEntry = createAsyncThunk(
   'entry/deleteEntry',
   async (entryId: number) => {
-    const response = await fetch(`http://localhost:3000/entry/${entryId}`, {
+    const response = await fetch(`http://192.168.0.87:3000/entry/${entryId}`, {
       method: 'DELETE',
     });
 

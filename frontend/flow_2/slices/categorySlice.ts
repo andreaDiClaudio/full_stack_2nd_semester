@@ -3,7 +3,7 @@ import { CategoryEntity } from '@/flow_1/CategoryEntity';
 
 // Create async thunk to fetch categories
 export const fetchCategories = createAsyncThunk('category/fetchCategories', async () => {
-  const response = await fetch('http://localhost:3000/category');
+  const response = await fetch('http://192.168.0.87:3000/category');
   const data = await response.json();
   return data.data; // Assuming 'data' contains the categories
 });
@@ -12,7 +12,7 @@ export const fetchCategories = createAsyncThunk('category/fetchCategories', asyn
 export const createCategory = createAsyncThunk(
   'category/createCategory',
   async (categoryName: string) => {
-    const response = await fetch('http://localhost:3000/category', {
+    const response = await fetch('http://192.168.0.87:3000/category', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export const createCategory = createAsyncThunk(
 export const updateCategory = createAsyncThunk(
   'category/updateCategory',
   async ({ id, title }: { id: string; title: string }) => {
-    const response = await fetch(`http://localhost:3000/category/${id}`, {
+    const response = await fetch(`http://192.168.0.87:3000/category/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ export const updateCategory = createAsyncThunk(
 export const deleteCategory = createAsyncThunk(
   'category/deleteCategory',
   async (categoryId: number) => {
-    const response = await fetch(`http://localhost:3000/category/${categoryId}`, {
+    const response = await fetch(`http://192.168.0.87:3000/category/${categoryId}`, {
       method: 'DELETE',
     });
 

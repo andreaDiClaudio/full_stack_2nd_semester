@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { logout, reloadJwtFromStorage } from './flow_3/users/usersSlice';
 import { SignupScreen } from './flow_3/users/SignupScreen';
+import CameraScreen from './flow_3/camera/CameraScreen';
 
 // Create Stack and Tab Navigators
 const Stack = createStackNavigator<RootStackParamList>();
@@ -44,6 +45,19 @@ function SignupScreenWrapper() {
       <GluestackUIProvider mode="light">
         <View style={styles.contentContainer}>
           <SignupScreen />
+          <StatusBar style="auto" />
+        </View>
+      </GluestackUIProvider>
+    </View>
+  );
+}
+
+function CameraScreenWrapper() {
+  return (
+    <View style={styles.screenContainer}>
+      <GluestackUIProvider mode="light">
+        <View style={styles.contentContainer}>
+          <CameraScreen />
           <StatusBar style="auto" />
         </View>
       </GluestackUIProvider>
@@ -135,6 +149,11 @@ function MyTabs() {
       />
       <Tab.Screen name="Category" component={CreateCategoryScreenWrapper} options={{ headerShown: false }} />
       <Tab.Screen name="Entry" component={EntriesScreenWrapper} options={{ headerShown: false }} />
+      <Tab.Screen
+        name="Camera"
+        component={CameraScreenWrapper}
+        options={{ headerShown: false }}
+      />
     </Tab.Navigator>
   );
 }
