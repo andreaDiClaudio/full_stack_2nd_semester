@@ -1,91 +1,55 @@
-import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from './utils/types';
-import { Center } from '@gluestack-ui/config/build/theme';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/flow_2/slices/store';
-import { fetchEntries } from '@/flow_2/slices/entrySlice';
 import { CategoryEntity } from './CategoryEntity';
-
-export class EntryEntity {
-  constructor(
-    public id: number,
-    public title: string,
-    public amount: number,
-    public categoryId: number,
-    public category: { id: number; title: string }
-  ) { }
-}
+import { useEntries } from '@/flow_3/hooks/useEntries';
+import { EntryEntity } from '@/flow_2/entity/EntryEntity';
 
 export default function Entries() {
-  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'Home'>>();
+  const { data: entries = [], isLoading, isError } = useEntries();
+  const [groupedEntries, setGroupedEntries] = useState<Record<string, EntryEntity[]>>({});
+  const [selectedEntries, setSelectedEntries] = useState<Set<number>>(new Set());
   const { width: screenWidth } = Dimensions.get("window");
 
-  // Access entries from the Redux state
-  const { entries, status, error } = useSelector((state: RootState) => state.entry);
-  const [groupedEntries, setGroupedEntries] = useState<Record<string, EntryEntity[]>>({});
-  const [selectedEntries, setSelectedEntries] = useState<Set<number>>(new Set()); // Track selected entries
-
-  useEffect(() => {
-    // Dispatch fetchEntries to load data when the component mounts
-    dispatch(fetchEntries());
-  }, [dispatch]);
-
-  // Watch for changes in `entries` and group them by category
   useEffect(() => {
     if (entries.length > 0) {
-      groupEntriesByCategory(entries);
-    }
-  }, [entries]); // Trigger when `entries` changes
-  
-  // Group entries by category
-  const groupEntriesByCategory = (entries: EntryEntity[]) => {
-    const grouped: Record<string, EntryEntity[]> = {};
-    entries.forEach((entry) => {
-      const categoryId = entry.category ? entry.category.id.toString() : null;  // Access category.id
-      if (categoryId) {
-        if (!grouped[categoryId]) {
-          grouped[categoryId] = [];
+      const grouped: Record<string, EntryEntity[]> = {};
+      entries.forEach((entry: EntryEntity) => {
+        const categoryId = entry.category?.id.toString();
+        if (categoryId) {
+          if (!grouped[categoryId]) grouped[categoryId] = [];
+          grouped[categoryId].push(entry);
         }
-        grouped[categoryId].push(entry);
-      }
-    });
-    setGroupedEntries(grouped);
-  };
-
-
-
-  // Handle checkbox selection
+      });
+      setGroupedEntries(grouped);
+    }
+  }, [entries]);
 
   const handleToggleSelect = (entryId: number) => {
-    setSelectedEntries((prevSelectedEntries) => {
-      const newSelectedEntries = new Set(prevSelectedEntries);
-      if (newSelectedEntries.has(entryId)) {
-        newSelectedEntries.delete(entryId);  // Deselect
-      } else {
-        newSelectedEntries.add(entryId);  // Select
-      }
-      return newSelectedEntries;
+    setSelectedEntries((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(entryId) ? newSet.delete(entryId) : newSet.add(entryId);
+      return newSet;
     });
   };
 
   const handleCategoryEdit = (category: CategoryEntity) => {
-    console.log("Should not print");
     navigation.navigate('EditCategory', { category });
   };
 
-  //TODO implement
   const handleEntryEdit = (entry: EntryEntity) => {
     navigation.navigate('EditEntry', { entry });
   };
 
+  if (isLoading) return <Text>Loading...</Text>;
+  if (isError) return <Text>Error fetching entries</Text>;
+
   return (
     <View style={[styles.container, { width: screenWidth * 0.5 }]}>
       <Text style={{ fontSize: 40, fontWeight: "600", textAlign: 'center' }}>Entry List</Text>
-
       <View style={[styles.container, { paddingTop: 30 }, { width: "140%" }]}>
         <View style={styles.listContainer}>
           {Object.keys(groupedEntries).map((categoryId) => {
@@ -101,18 +65,13 @@ export default function Entries() {
                   </TouchableOpacity>
                 </View>
                 <FlatList
-                  showsVerticalScrollIndicator={false}
-                  scrollEnabled={true}
                   data={categoryEntries}
                   keyExtractor={(item) => item.id.toString()}
                   renderItem={({ item }) => (
                     <View style={styles.todoItemContainer}>
                       <TouchableOpacity style={styles.todoItem}>
                         <View style={styles.checkboxContainer}>
-                          <TouchableOpacity
-                            style={styles.checkbox}
-                            onPress={() => handleToggleSelect(item.id)}
-                          >
+                          <TouchableOpacity onPress={() => handleToggleSelect(item.id)}>
                             <View style={[styles.checkboxOuter, selectedEntries.has(item.id) && styles.checkboxOuterSelected]}>
                               {selectedEntries.has(item.id) && <View style={styles.checkboxInner} />}
                             </View>
@@ -128,10 +87,7 @@ export default function Entries() {
                         </View>
                       </TouchableOpacity>
                       <View style={styles.dotsContainer}>
-                        <TouchableOpacity
-                          onPress={() => handleEntryEdit(item)}
-                          style={styles.actionButton}
-                        >
+                        <TouchableOpacity onPress={() => handleEntryEdit(item)}>
                           <Text style={styles.dots}>•••</Text>
                         </TouchableOpacity>
                       </View>

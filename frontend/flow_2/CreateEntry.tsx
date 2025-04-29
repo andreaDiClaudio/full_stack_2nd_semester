@@ -12,6 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from './slices/store';
 import { fetchCategories, setCategories } from './slices/categorySlice';
 import { createEntry, fetchEntries, resetEntryForm, setEntryAmount, setEntryTitle, setSelectedCategory } from './slices/entrySlice';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useCreateEntry } from '@/flow_3/hooks/useCreateEntry';
 
 export default function CreateEntryScreen() {
   const { width: screenWidth } = Dimensions.get("window");
@@ -22,9 +25,12 @@ export default function CreateEntryScreen() {
   const entryAmount = useSelector((state: RootState) => state.entry.entryAmount);
   const selectedCategory = useSelector((state: RootState) => state.entry.selectedCategory);
   const categories = useSelector((state: RootState) => state.category.categories);
-  const entryStatus = useSelector((state: RootState) => state.entry.status);
-  const entryError = useSelector((state: RootState) => state.entry.error);
 
+  const {
+    mutate: createEntryMutation,
+    isPending,
+    error,
+  } = useCreateEntry();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -32,8 +38,7 @@ export default function CreateEntryScreen() {
     }, [dispatch])
   );
 
-
-  const onAddEntry = async () => {
+  const onAddEntry = () => {
     const amount = parseInt(entryAmount, 10);
     if (!entryTitle.trim() || isNaN(amount) || amount < 1 || amount > 99 || !selectedCategory) {
       console.error("Invalid input");
@@ -46,19 +51,12 @@ export default function CreateEntryScreen() {
       categoryId: selectedCategory,
     };
 
-    // Dispatch the createEntry async action
-    const response = await dispatch(createEntry(entryData));
-    // Check if the response is successful (you may have a success flag in your response payload)
-    if (response?.meta?.requestStatus === 'fulfilled') {
-      console.log('Category updated successfully')
-
-      // Reset entry-related state to default values
-      dispatch(resetEntryForm());
-
-      // Re-fetch the updated categories (triggering a new dispatch for fresh data)
-      dispatch(fetchEntries());
-      navigation.goBack(); // Or use any other navigation logic as needed
-    }
+    createEntryMutation(entryData, {
+      onSuccess: () => {
+        dispatch(resetEntryForm());
+        navigation.goBack();
+      },
+    });
   };
 
   return (
@@ -114,10 +112,6 @@ export default function CreateEntryScreen() {
       <Button size="xl" variant="solid" action="primary" onPress={onAddEntry}>
         <ButtonText>Create</ButtonText>
       </Button>
-
-      {/* Loading/Error Feedback */}
-      {entryStatus === 'loading' && <Text>Loading...</Text>}
-      {entryStatus === 'failed' && <Text style={{ color: 'red' }}>{entryError}</Text>}
     </View>
   );
 }

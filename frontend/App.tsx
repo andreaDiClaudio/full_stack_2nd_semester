@@ -6,6 +6,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from './flow_1/utils/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 // Screens
 import Category from './flow_1/Home';
 import CreateCategoryScreen from './flow_2/CreateCategory';
@@ -168,23 +170,25 @@ function RootStack({ dispatch }: { dispatch: any }) {
       }}
     >
       <Stack.Screen name="Home" component={MyTabs} options={({ navigation }) => ({
-          title: 'Home', // nice clean title
-          headerRight: () => (
-            <Button
-              title="Logout"
-              onPress={() => {
-                dispatch(logout()); 
-              }}
-              color="#fff" // white text on tomato background
-            />
-          )
-        })}
+        title: 'Home', // nice clean title
+        headerRight: () => (
+          <Button
+            title="Logout"
+            onPress={() => {
+              dispatch(logout());
+            }}
+            color="#fff" // white text on tomato background
+          />
+        )
+      })}
       />
       <Stack.Screen name="EditCategory" component={EditCategoryScreenWrapper} options={{ title: 'Edit Category' }} />
       <Stack.Screen name="EditEntry" component={EditEntryScreenWrapper} options={{ title: 'Edit Entry' }} />
     </Stack.Navigator>
   );
 }
+
+const queryClient = new QueryClient();
 
 function MainApp() {
   const dispatch = useDispatch();
@@ -206,7 +210,7 @@ function MainApp() {
 
   return (
     <NavigationContainer>
-      {token ? <RootStack dispatch={dispatch}/> : <AuthScreens />}
+      {token ? <RootStack dispatch={dispatch} /> : <AuthScreens />}
     </NavigationContainer>
   );
 }
@@ -214,7 +218,9 @@ function MainApp() {
 export default function App() {
   return (
     <Provider store={store}>
-      <MainApp />
+      <QueryClientProvider client={queryClient}>
+        <MainApp />
+      </QueryClientProvider>
     </Provider>
   );
 }
