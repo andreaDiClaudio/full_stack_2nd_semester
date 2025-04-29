@@ -1,7 +1,10 @@
 import * as ImagePicker from 'expo-image-picker';
 import { Button, View, Image, StyleSheet, Alert } from 'react-native';
 import { useState } from 'react';
+import * as FileSystem from 'expo-file-system';
+import axios from 'axios';
 
+//TODO implement backend
 export default function CameraScreen() {
   const [image, setImage] = useState<string | null>(null);
 
@@ -26,11 +29,27 @@ export default function CameraScreen() {
     setImage(null);
   };
 
-  const handleSave = () => {
-    console.log('sending to backend');
-    // You can implement actual upload logic here later
-    Alert.alert('Photo saved', 'Pretend this was sent to backend.');
-    setImage(null); // Optional: reset after saving
+  const handleSave = async () => {
+    if (!image) return;
+
+    try {
+      // Convert image to base64
+      const base64 = await FileSystem.readAsStringAsync(image, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Send to backend
+      const response = await axios.post('http://192.168.0.87:3000/image/upload', {
+        image: base64,
+      });
+
+      console.log('Image uploaded:', response.data);
+      Alert.alert('Success', 'Image sent to backend.');
+      setImage(null);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      Alert.alert('Error', 'Failed to send image.');
+    }
   };
 
   return (

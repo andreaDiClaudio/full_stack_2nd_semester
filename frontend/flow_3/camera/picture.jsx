@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera/legacy';
 import * as MediaLibrary from 'expo-media-library';
 
+
 export default function CameraComponent({ setPhotoToDisplay, setCamera }) {
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(null);

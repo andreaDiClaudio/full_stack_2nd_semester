@@ -8,6 +8,7 @@ import { CategoryModule } from './category/category.module';
 import { dbConfig } from 'data.source';
 import { EntryModule } from './entry/entry.module';
 import { AuthModule } from './authentication/auth.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './authentication/auth.module';
     CategoryModule,
     EntryModule,
     AuthModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],
