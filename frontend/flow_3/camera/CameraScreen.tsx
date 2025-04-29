@@ -1,86 +1,51 @@
-import { CameraView, CameraType, useCameraPermissions, Camera } from 'expo-camera';
-import { useEffect, useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { shareAsync } from 'expo-sharing';
-import * as MediaLibrary from 'expo-media-library';
+import * as ImagePicker from 'expo-image-picker';
+import { Button, View, Image, StyleSheet, Alert } from 'react-native';
+import { useState } from 'react';
 
-export default function App() {
-  const cameraRef = useRef<CameraView>(null); // Correctly type the cameraRef
-  const [hasCameraPermission, setHasCameraPermission] = useState<boolean>();
-  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState<boolean>();
-  const [photo, setPhoto] = useState<any>(null);
+export default function CameraScreen() {
+  const [image, setImage] = useState<string | null>(null);
 
-  // Automatically ask for permission when the component mounts
-  useEffect(() => {
-    (async () => {
-      const cameraPermission = await Camera.requestCameraPermissionsAsync();
-      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-      setHasCameraPermission(cameraPermission.status === "granted");
-      setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
-    })();
-  }, []);
+  const openNativeCamera = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      alert('Camera permission is required');
+      return;
+    }
 
-  if (hasCameraPermission === undefined) {
-    return <Text>Requesting permissions...</Text>;
-  } else if (!hasCameraPermission) {
-    return <Text>Permission for camera not granted. Please change this in settings.</Text>;
-  }
-
-  // Function to take a picture
-  const takePic = async () => {
-    let options = {
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: false,
       quality: 1,
-      base64: true,
-      exif: false,
-    };
+    });
 
-    if (cameraRef.current) {
-      const newPhoto = await cameraRef.current.takePictureAsync(options);
-      setPhoto(newPhoto);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
   };
 
-  // Function to share the photo
-  const sharePic = () => {
-    if (photo?.uri) {
-      shareAsync(photo.uri).then(() => {
-        setPhoto(null);
-      });
-    }
+  const handleCancel = () => {
+    setImage(null);
   };
 
-  // Function to save the photo to the media library
-  const savePhoto = () => {
-    if (photo?.uri && hasMediaLibraryPermission) {
-      MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
-        setPhoto(null);
-      });
-    }
+  const handleSave = () => {
+    console.log('sending to backend');
+    // You can implement actual upload logic here later
+    Alert.alert('Photo saved', 'Pretend this was sent to backend.');
+    setImage(null); // Optional: reset after saving
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-
-      <CameraView style={styles.camera} ref={cameraRef}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.captureButton} onPress={takePic}>
-            <Text style={styles.captureText}>Capture</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
-
-      {photo && (
-        <View style={styles.photoContainer}>
-          <Image source={{ uri: photo.uri }} style={styles.photo} />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.saveButton} onPress={savePhoto}>
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.shareButton} onPress={sharePic}>
-              <Text style={styles.buttonText}>Share</Text>
-            </TouchableOpacity>
+    <View>
+      <Button title="Open Camera" onPress={openNativeCamera} />
+      {image && (
+        <View style={styles.imageWrapper}>
+          <Image source={{ uri: image }} style={styles.image} />
+          <View style={styles.buttonRow}>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" onPress={handleCancel} color="#d9534f" />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Save" onPress={handleSave} color="#5cb85c" />
+            </View>
           </View>
         </View>
       )}
@@ -89,55 +54,23 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-  },
-  camera: {
-    flex: 1,
-    width: '100%',
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
+  imageWrapper: {
+    marginTop: 20,
     alignItems: 'center',
   },
-  captureButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    padding: 20,
-    borderRadius: 50,
-  },
-  captureText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  photoContainer: {
-    position: 'absolute',
-    top: 50,
-    alignItems: 'center',
-  },
-  photo: {
-    width: 300,
-    height: 200,
-    marginBottom: 20,
-  },
-  saveButton: {
-    backgroundColor: 'green',
-    padding: 10,
-    borderRadius: 5,
+  image: {
+    width: 250,
+    height: 250,
+    borderRadius: 10,
     marginBottom: 10,
   },
-  shareButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: 250,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
+  buttonContainer: {
+    flex: 1,
+    marginHorizontal: 5,
   },
 });
