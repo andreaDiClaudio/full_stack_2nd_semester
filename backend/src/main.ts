@@ -11,8 +11,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('My API')  // Set your API title
     .setDescription('API documentation for my NestJS app')  
-    .setVersion('1.0')  // Set the version
-    .addTag('users')  // Optional, you can add tags to group your endpoints
+    .setVersion('1.0')  
     .build();
 
   const document = SwaggerModule.createDocument(app, config);  // Generate Swagger document
