@@ -24,20 +24,16 @@ describe('LoginScreen', () => {
       </Provider>
     );
 
-    // Fill the form with valid data
     fireEvent.changeText(screen.getByPlaceholderText('Username'), 'testuser');
     fireEvent.changeText(screen.getByPlaceholderText('Password'), 'password123');
 
-    // Simulate pressing the login button
     fireEvent.press(screen.getByText('Login'));
 
-    // Wait for the API call to complete and ensure the axios.post was called
     await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/api/login', {
       username: 'testuser',
       password: 'password123',
     }));
 
-    // You can also check if the state changed after the API call, e.g. by checking if the token is saved in the Redux store
     const state = store.getState();
     expect(state.user.token).toBe('fake-token');
   });
@@ -70,10 +66,8 @@ describe('LoginScreen', () => {
       </Provider>
     );
 
-    // Simulate pressing the login button without filling the form
     fireEvent.press(screen.getByText('Login'));
 
-    // Check if the form-level error message appears
     await waitFor(() => expect(screen.getByText('Both username and password are required.')).toBeTruthy());
   });
 });
